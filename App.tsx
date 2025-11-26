@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, FileImage, FileVideo, FileAudio, Eye } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
@@ -64,6 +63,7 @@ const PendingFileItem = ({
       return parts.length > 1 ? parts.pop()?.toLowerCase() : '';
   };
   const ext = getExtension(file.name);
+  
   // Safe style access
   const safeStyles = defaultStyles || {};
   // @ts-ignore
@@ -191,6 +191,16 @@ function App() {
   const [fileToMove, setFileToMove] = useState<{id: string, parentId: number | null} | null>(null);
   const [previewFile, setPreviewFile] = useState<{url: string, name: string, mime: string} | null>(null);
 
+  // Active Menu ID state to ensure only one menu is open at a time
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setActiveMenuId(null);
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
+
   // Save config on change
   useEffect(() => {
     localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
@@ -221,6 +231,7 @@ function App() {
   useEffect(() => {
     if (config.botToken && config.chatId) {
       fetchFiles();
+      setActiveMenuId(null); // Close menus on navigation
     }
   }, [config, fetchFiles]);
 
@@ -495,8 +506,8 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="mx-10 space-y-6">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20">
+        <div className="space-y-6" style={{ marginLeft: '3%', marginRight: '3%' }}>
           
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 text-sm animate-in slide-in-from-top-2 break-words">
@@ -707,6 +718,8 @@ function App() {
                             onMoveClick={(id, parentId) => setFileToMove({id, parentId})}
                             onNavigate={(id, name) => handleNavigate(id, name)}
                             onPreview={(url, name, mime) => setPreviewFile({url, name, mime})}
+                            isMenuOpen={activeMenuId === update.update_id}
+                            onMenuToggle={() => setActiveMenuId(prev => prev === update.update_id ? null : update.update_id)}
                         />
                     </div>
                 ))}

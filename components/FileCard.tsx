@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Download, Loader2, Link as LinkIcon, Check, Trash2, Folder, MoveRight, Eye, MoreVertical } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { TelegramMessage, AppConfig } from '../types';
@@ -12,14 +12,17 @@ interface FileCardProps {
   onMoveClick: (fileId: string, currentParentId: number | null) => void;
   onNavigate: (folderId: number, folderName: string) => void;
   onPreview: (url: string, fileName: string, mimeType: string) => void;
+  // New props for controlled menu state
+  isMenuOpen: boolean;
+  onMenuToggle: () => void;
 }
 
 export const FileCard: React.FC<FileCardProps> = ({ 
-    message, config, onDeleteClick, onMoveClick, onNavigate, onPreview 
+    message, config, onDeleteClick, onMoveClick, onNavigate, onPreview,
+    isMenuOpen, onMenuToggle
 }) => {
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
 
   const doc = message.document;
   const isFolder = doc?.is_folder;
@@ -54,23 +57,9 @@ export const FileCard: React.FC<FileCardProps> = ({
   // @ts-ignore
   const fileStyle = safeStyles[extension] || {};
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    if (showMenu) {
-        const handleClickOutside = () => setShowMenu(false);
-        window.addEventListener('click', handleClickOutside);
-        return () => window.removeEventListener('click', handleClickOutside);
-    }
-  }, [showMenu]);
-
-  const [compressed, setCompressed] = useState(false);
-  // setCompressed(true);
-  useEffect(() => {
-    setCompressed(true);
-  }, []);
   const handleDownload = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowMenu(false);
+      onMenuToggle(); // Close menu
       if (!fileId || isFolder) return;
       const url = getFileDownloadUrl(config, fileId, fileName);
       window.open(url, '_blank');
@@ -78,7 +67,7 @@ export const FileCard: React.FC<FileCardProps> = ({
 
   const handlePreview = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowMenu(false);
+      onMenuToggle(); // Close menu
       if (!fileId || !isPreviewable) return;
       const url = getFileDownloadUrl(config, fileId, fileName);
       onPreview(url, fileName, mimeType);
@@ -86,7 +75,6 @@ export const FileCard: React.FC<FileCardProps> = ({
 
   const handleCopyLink = async (e: React.MouseEvent) => {
       e.stopPropagation();
-      // Don't close menu immediately if copying to show feedback
       if (isCopying || isFolder) return;
       setIsCopying(true);
       try {
@@ -97,8 +85,8 @@ export const FileCard: React.FC<FileCardProps> = ({
                setCopied(true);
                setTimeout(() => {
                    setCopied(false);
-                  //  setShowMenu(false);
-               }, 2000);
+                  //  onMenuToggle(); // Close menu after feedback
+               }, 1000);
           }
       } catch (error) {
           console.error(error);
@@ -110,21 +98,21 @@ export const FileCard: React.FC<FileCardProps> = ({
 
   const handleDeleteClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowMenu(false);
+      onMenuToggle(); // Close menu
       if (!actionId) return;
       onDeleteClick(actionId, fileName);
   };
 
   const handleMoveClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowMenu(false);
+      onMenuToggle(); // Close menu
       if (!actionId) return;
       onMoveClick(actionId, doc?.parent_id || null);
   };
 
-  const handleMenuToggle = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setShowMenu(!showMenu);
+  const handleMenuButton = (e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent parent click
+      onMenuToggle();
   };
 
   const dateStr = new Date(message.date * 1000).toLocaleDateString(undefined, {
@@ -137,68 +125,11 @@ export const FileCard: React.FC<FileCardProps> = ({
   if (folderStats.files > 0) folderInfo.push(`${folderStats.files} file${folderStats.files !== 1 ? 's' : ''}`);
   const folderInfoStr = folderInfo.length > 0 ? folderInfo.join(', ') : 'Empty';
 
-  // --- Render Action Buttons (Reusable) ---
-  const ActionButtons = () => (
-      <>
-        {!isFolder && (
-            <>
-                {isPreviewable && (
-                    <button 
-                        onClick={handlePreview}
-                        className="p-2 rounded-lg text-slate-400 hover:text-telegram-500 hover:bg-telegram-50 transition-all relative"
-                        title="Preview"
-                    >
-                        <Eye className="w-5 h-5" />
-                    </button>
-                )}
-
-                <button 
-                  onClick={handleCopyLink}
-                  disabled={isCopying}
-                  className="p-2 rounded-lg text-slate-400 hover:text-telegram-500 hover:bg-telegram-50 transition-all relative"
-                  title="Copy Direct Proxy Link"
-                >
-                  {isCopying ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-telegram-500" />
-                  ) : copied ? (
-                    <Check className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <LinkIcon className="w-5 h-5" />
-                  )}
-                </button>
-
-                <button 
-                    onClick={handleDownload}
-                    className="p-2 rounded-lg text-slate-400 hover:text-telegram-500 hover:bg-telegram-50 transition-all relative"
-                    title="Download"
-                >
-                    <Download className="w-5 h-5" />
-                </button>
-            </>
-        )}
-
-        <button 
-            onClick={handleMoveClick}
-            className="p-2 rounded-lg text-slate-400 hover:text-orange-500 hover:bg-orange-50 transition-all relative"
-            title="Move to Folder"
-        >
-            <MoveRight className="w-5 h-5" />
-        </button>
-
-        <button 
-            onClick={handleDeleteClick}
-            className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all relative"
-            title="Delete"
-        >
-            <Trash2 className="w-5 h-5" />
-        </button>
-      </>
-  );
-
   return (
     <div 
         className={`bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200 group p-4 flex items-center justify-between relative ${isFolder ? 'cursor-pointer hover:bg-slate-50' : ''}`}
     >
+      {/* Left Side: Icon & Info */}
       <div className="flex items-center gap-4 overflow-hidden flex-1 mr-2">
         <div 
             onClick={isFolder ? undefined : handlePreview}
@@ -217,15 +148,11 @@ export const FileCard: React.FC<FileCardProps> = ({
              </div>
           )}
         </div>
+        
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium text-slate-900 truncate pr-2" title={fileName}>
             {fileName}
           </h3>
-          {/* <div className="flex items-center gap-2 mt-1">
-            {isFolder && <span className="text-xs text-slate-500">{folderInfoStr}</span>}
-            {!isFolder && <span className="text-xs text-slate-500">{formatBytes(fileSize || 0)}</span>}
-            {!isFolder && <span className="w-1 h-1 rounded-full bg-slate-300"></span>}
-            <span className="text-xs text-slate-400">{dateStr}</span> */}
           <div className="flex items-center gap-2 mt-1 min-w-0 text-xs text-slate-500">
             {isFolder && <span className="truncate">{folderInfoStr}</span>}
             {!isFolder && <span className="whitespace-nowrap">{formatBytes(fileSize || 0)}</span>}
@@ -235,23 +162,18 @@ export const FileCard: React.FC<FileCardProps> = ({
         </div>
       </div>
       
-      {/* Desktop Actions (Hidden on Mobile) */}
-      {!compressed ? (
-        <div className="items-center gap-1 pl-2 shrink-0">
-          <ActionButtons />
-        </div>
-      ) : (
-        <div className="relative">
+      {/* Always show Menu Button */}
+      <div className="relative shrink-0">
           <button 
-            onClick={handleMenuToggle}
-            className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"
+            onClick={handleMenuButton}
+            className={`p-2 rounded-lg transition-colors ${isMenuOpen ? 'bg-slate-100 text-slate-600' : 'text-slate-400 hover:bg-slate-50'}`}
           >
             <MoreVertical className="w-5 h-5" />
           </button>
 
           {/* Dropdown Menu */}
-          {showMenu && (
-            <div className="absolute right-full bottom-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-50 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
+          {isMenuOpen && (
+            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-50 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right" onClick={(e) => e.stopPropagation()}>
                 {!isFolder && (
                     <>
                         {isPreviewable && (
@@ -278,8 +200,7 @@ export const FileCard: React.FC<FileCardProps> = ({
                 </button>
             </div>
           )}
-        </div>
-      )}
+      </div>
     </div>
   );
 };
