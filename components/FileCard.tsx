@@ -70,7 +70,7 @@ export const FileCard: React.FC<FileCardProps> = ({
 
   const handlePreview = (e: React.MouseEvent) => {
       e.stopPropagation();
-      onMenuToggle(); // Close menu
+      if(isMenuOpen) onMenuToggle(); // Close menu
       if (!fileId || !isPreviewable) return;
       const url = getFileDownloadUrl(config, fileId, fileName);
       onPreview(url, fileName, mimeType);
