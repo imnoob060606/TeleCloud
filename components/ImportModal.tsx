@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Download, X, Loader2, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { AppConfig, TelegramUpdate, TelegramMessage } from '../types';
@@ -119,19 +118,19 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-slate-800">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
             <Download className="w-5 h-5 text-telegram-500" />
             <h2 className="font-semibold text-lg">Import Existing Files</h2>
           </div>
-          <button onClick={onClose} disabled={isImporting} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={onClose} disabled={isImporting} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 text-sm text-blue-800 flex gap-2">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-300 flex gap-2">
              <AlertCircle className="w-5 h-5 shrink-0" />
              <p>
                 Bot API cannot scan history. To add existing files, enter their <strong>Message Link</strong> or <strong>ID</strong>.
@@ -141,29 +140,29 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Message Link(s) or ID(s)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message Link(s) or ID(s)</label>
             <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="e.g. https://t.me/c/123456/101, 102, 105-110"
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 outline-none text-sm min-h-[100px]"
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 dark:focus:ring-telegram-900 outline-none text-sm min-h-[100px]"
                 disabled={isImporting}
             />
-            <p className="text-xs text-slate-500 mt-2">Separate multiple IDs with commas. Use '100-110' for ranges.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Separate multiple IDs with commas. Use '100-110' for ranges.</p>
           </div>
 
           {status && (
-            <div className={`text-sm p-2 rounded ${status.includes('Success') ? 'text-green-600 bg-green-50' : 'text-slate-600 bg-slate-100'}`}>
+            <div className={`text-sm p-2 rounded ${status.includes('Success') ? 'text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/20' : 'text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700'}`}>
                 {status}
             </div>
           )}
         </div>
 
-        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+        <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
           <button
             onClick={onClose}
             disabled={isImporting}
-            className="px-4 py-2 text-slate-600 text-sm font-medium hover:bg-slate-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
           >
             Cancel
           </button>

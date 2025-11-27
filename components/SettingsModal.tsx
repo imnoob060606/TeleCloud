@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Settings, X, AlertTriangle, CheckCircle, Loader2, Server } from 'lucide-react';
 import { AppConfig, DEFAULT_WORKER_URL } from '../types';
@@ -46,13 +45,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-        <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
-          <div className="flex items-center gap-2 text-slate-800">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+        <div className="p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center sticky top-0 z-10">
+          <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
             <Settings className="w-5 h-5" />
             <h2 className="font-semibold text-lg">Configuration</h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -60,40 +59,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
         <div className="p-6 space-y-6">
           {/* Bot Token */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Bot Token</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Bot Token</label>
             <input
               type="text"
               placeholder="123456789:ABCdef..."
-              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 transition-all outline-none text-sm"
+              className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 dark:focus:ring-telegram-900 transition-all outline-none text-sm"
               value={localConfig.botToken}
               onChange={(e) => setLocalConfig({ ...localConfig, botToken: e.target.value })}
             />
-            <p className="text-xs text-slate-500">From @BotFather</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">From @BotFather</p>
           </div>
 
           {/* Chat ID */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Chat ID</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Chat ID</label>
             <input
               type="text"
               placeholder="-100..."
-              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 transition-all outline-none text-sm"
+              className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 dark:focus:ring-telegram-900 transition-all outline-none text-sm"
               value={localConfig.chatId}
               onChange={(e) => setLocalConfig({ ...localConfig, chatId: e.target.value })}
             />
-            <p className="text-xs text-slate-500">Channel ID where files are stored</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Channel ID where files are stored</p>
           </div>
 
           {/* Worker URL */}
-          <div className="space-y-2 pt-4 border-t border-slate-100">
-             <label className="block text-sm font-medium text-slate-700 flex items-center gap-2">
+          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <Server className="w-4 h-4" />
                 Worker URL (Backend)
              </label>
              <input
               type="text"
               placeholder="/api"
-              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 transition-all outline-none text-sm font-mono bg-slate-50"
+              className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 dark:focus:ring-telegram-900 transition-all outline-none text-sm font-mono"
               value={localConfig.workerUrl}
               onChange={(e) => setLocalConfig({ ...localConfig, workerUrl: e.target.value })}
             />
@@ -102,24 +101,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
 
           {/* Validation Message */}
           {validationStatus === 'error' && (
-            <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 text-sm flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               Connection failed. Check credentials or Worker URL.
             </div>
           )}
           {validationStatus === 'success' && (
-            <div className="p-3 rounded-lg bg-green-50 text-green-600 text-sm flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-300 text-sm flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
               Connected successfully!
             </div>
           )}
         </div>
 
-        <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3 justify-end">
+        <div className="p-6 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex gap-3 justify-end">
           <button
             onClick={handleTestConnection}
             disabled={isValidating || isSaving || !localConfig.botToken}
-            className="px-4 py-2 text-slate-600 text-sm font-medium hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
           >
             {isValidating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Test'}
           </button>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Download, FileText } from 'lucide-react';
 
@@ -138,12 +137,12 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, url
            )}
 
            {isText && (
-               <div className="w-full h-full bg-white overflow-auto p-8 font-mono text-sm text-slate-800">
+               <div className="w-full h-full bg-white dark:bg-slate-900 overflow-auto p-8 font-mono text-sm text-slate-800 dark:text-slate-300 custom-scrollbar">
                    {textContent !== null ? (
                        <pre className="whitespace-pre-wrap break-words">{textContent}</pre>
                    ) : (
                        <div className="h-full flex items-center justify-center">
-                           <Loader2 className="w-8 h-8 animate-spin text-slate-300" />
+                           <Loader2 className="w-8 h-8 animate-spin text-slate-300 dark:text-slate-600" />
                        </div>
                    )}
                </div>

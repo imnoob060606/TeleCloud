@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -18,8 +19,11 @@
               telegram: {
                 50: '#f0f9ff',
                 100: '#e0f2fe',
+                200: '#bae6fd',
                 500: '#229ED9',
                 600: '#1e88bd',
+                700: '#0369a1',
+                800: '#075985',
                 900: '#0c4a6e',
               }
             }
@@ -43,6 +47,14 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
       }
+
+      /* Dark mode scrollbar */
+      .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
     </style>
   <script type="importmap">
 {
@@ -58,8 +70,8 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-50 text-slate-900 antialiased h-[100dvh] overflow-hidden">
+  <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 antialiased h-[100dvh] overflow-hidden transition-colors duration-200">
     <div id="root" class="h-full"></div>
   <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>

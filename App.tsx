@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, FileImage, FileVideo, FileAudio, Eye } from 'lucide-react';
+import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, Eye, Moon, Sun } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { AppConfig, TelegramUpdate, DEFAULT_WORKER_URL } from './types';
 import { formatBytes } from './constants';
@@ -14,6 +14,7 @@ import { getStoredFiles, uploadDocument, getFileDownloadUrl, deleteFile, createF
 import { FileCard } from './components/FileCard';
 
 const CONFIG_STORAGE_KEY = 'telecloud_config_v2';
+const THEME_STORAGE_KEY = 'telecloud_theme';
 
 // Breadcrumb item type
 interface Breadcrumb {
@@ -97,31 +98,31 @@ const PendingFileItem = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-lg group/item hover:border-telegram-200 hover:shadow-sm transition-all">
+    <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg group/item hover:border-telegram-200 dark:hover:border-telegram-700 hover:shadow-sm transition-all">
         <div className="flex items-center gap-3 min-w-0">
             <div 
                 onClick={previewUrl ? handlePreviewClick : undefined}
-                className={`w-12 h-12 rounded-lg bg-white flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 relative group/thumb ${previewUrl ? 'cursor-pointer' : ''}`}
+                className={`w-12 h-12 rounded-lg bg-white dark:bg-slate-700 flex items-center justify-center border border-slate-200 dark:border-slate-600 overflow-hidden shrink-0 relative group/thumb ${previewUrl ? 'cursor-pointer' : ''}`}
             >
                 {renderThumbnail()}
                 
                 {/* Overlay Eye Icon for previewable items */}
                 {previewUrl && (
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
-                        <div className="bg-white/90 rounded-full p-1 shadow-sm">
-                            <Eye className="w-3 h-3 text-telegram-600" />
+                        <div className="bg-white/90 dark:bg-slate-800/90 rounded-full p-1 shadow-sm">
+                            <Eye className="w-3 h-3 text-telegram-600 dark:text-telegram-400" />
                         </div>
                     </div>
                 )}
             </div>
             <div className="min-w-0 text-left">
-                <p className="text-sm font-medium text-slate-700 truncate" title={file.name}>{file.name}</p>
-                <div className="flex items-center gap-2 text-xs text-slate-400">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate" title={file.name}>{file.name}</p>
+                <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                     <span>{formatBytes(file.size)}</span>
                     {previewUrl && (
                         <button 
                             onClick={handlePreviewClick}
-                            className="text-telegram-600 bg-telegram-50 hover:bg-telegram-100 px-1.5 rounded text-[10px] font-medium transition-colors flex items-center gap-1"
+                            className="text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 hover:bg-telegram-100 dark:hover:bg-telegram-900/50 px-1.5 rounded text-[10px] font-medium transition-colors flex items-center gap-1"
                         >
                             <Eye className="w-3 h-3" />
                             Preview
@@ -133,14 +134,14 @@ const PendingFileItem = ({
         <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover/item:opacity-100 transition-opacity">
             <button 
                 onClick={onUpload}
-                className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-white rounded-lg transition-colors shadow-sm border border-transparent hover:border-slate-100"
+                className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600"
                 title="Upload this file only"
             >
                 <UploadCloud className="w-4 h-4" />
             </button>
             <button 
                 onClick={onRemove}
-                className="p-2 text-slate-400 hover:text-red-500 hover:bg-white rounded-lg transition-colors shadow-sm border border-transparent hover:border-slate-100"
+                className="p-2 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600"
                 title="Remove from list"
             >
                 <X className="w-4 h-4" />
@@ -160,6 +161,21 @@ function App() {
       workerUrl: DEFAULT_WORKER_URL
     };
   });
+
+  // Dark Mode State
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
   const [files, setFiles] = useState<TelegramUpdate[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -474,31 +490,40 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-20 shadow-sm">
+      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 sticky top-0 z-20 shadow-sm">
         <div className="mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 min-w-10 bg-telegram-500 rounded-xl flex items-center justify-center shadow-lg shadow-telegram-500/20">
               <UploadCloud className="text-white w-6 h-6" />
             </div>
             <div>
-              <h1 className="font-bold text-xl text-slate-900 tracking-tight">TeleCloud</h1>
-              <p className="text-xs text-slate-500 font-medium">Persistent Cloud Storage (CF Worker)</p>
+              <h1 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">TeleCloud</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Persistent Cloud Storage (CF Worker)</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
+            {/* Dark Mode Toggle */}
+            <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
+                title="Toggle Theme"
+            >
+                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
             <button 
               onClick={fetchFiles}
-              className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 rounded-lg transition-all"
+              className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
               title="Refresh List"
             >
               <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium text-sm transition-colors"
             >
               <Settings className="w-4 h-4" />
               <span className="hidden min-[480px]:inline">Settings</span>
@@ -508,11 +533,11 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 custom-scrollbar">
         <div className="space-y-6" style={{ marginLeft: '3%', marginRight: '3%' }}>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 text-sm animate-in slide-in-from-top-2 break-words">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 text-sm animate-in slide-in-from-top-2 break-words">
               <Shield className="w-5 h-5 shrink-0" />
               <span className="flex-1">{error}</span>
             </div>
@@ -521,19 +546,19 @@ function App() {
           {/* Upload & Preview Zone */}
           <div className="max-w-5xl mx-auto relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-telegram-500 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative bg-white rounded-xl p-8 border border-slate-100 shadow-sm text-center space-y-4">
+            <div className="relative bg-white dark:bg-slate-800 rounded-xl p-8 border border-slate-100 dark:border-slate-700 shadow-sm text-center space-y-4">
               
               {isUploading ? (
                  <div className="max-w-xl mx-auto space-y-3 py-2 text-left">
-                    <div className="flex items-center justify-between text-sm mb-2 border-b border-slate-100 pb-2">
-                        <span className="font-semibold text-slate-700">Uploading {uploadStatuses.length} files...</span>
-                        <span className="text-telegram-600 bg-telegram-50 px-2 py-0.5 rounded text-xs font-mono">{networkSpeed}</span>
+                    <div className="flex items-center justify-between text-sm mb-2 border-b border-slate-100 dark:border-slate-700 pb-2">
+                        <span className="font-semibold text-slate-700 dark:text-slate-200">Uploading {uploadStatuses.length} files...</span>
+                        <span className="text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 px-2 py-0.5 rounded text-xs font-mono">{networkSpeed}</span>
                     </div>
                     
                     <div className="max-h-[200px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
                         {uploadStatuses.map((file, idx) => (
                             <div key={idx} className="space-y-1">
-                                <div className="flex justify-between text-xs text-slate-600">
+                                <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300">
                                     <div className="flex items-center gap-1.5 truncate max-w-[70%]">
                                         <FileText className="w-3 h-3" />
                                         <span className="truncate">{file.name}</span>
@@ -544,7 +569,7 @@ function App() {
                                         <span>{Math.round(file.progress)}%</span>
                                     </div>
                                 </div>
-                                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                     <div 
                                         className={`h-full transition-all duration-300 ease-out ${
                                             file.status === 'error' ? 'bg-red-500' :
@@ -562,12 +587,12 @@ function App() {
               ) : pendingFiles.length > 0 ? (
                 /* Pending Files Preview List */
                 <div className="text-left w-full max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
-                   <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                   <div className="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-800 text-lg">Selected Files</span>
-                        <span className="bg-telegram-100 text-telegram-700 px-2 py-0.5 rounded-full text-xs font-medium">{pendingFiles.length}</span>
+                        <span className="font-bold text-slate-800 dark:text-white text-lg">Selected Files</span>
+                        <span className="bg-telegram-100 dark:bg-telegram-900/50 text-telegram-700 dark:text-telegram-300 px-2 py-0.5 rounded-full text-xs font-medium">{pendingFiles.length}</span>
                       </div>
-                      <button onClick={handleClearPending} className="text-red-500 text-xs hover:bg-red-50 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                      <button onClick={handleClearPending} className="text-red-500 text-xs hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded transition-colors flex items-center gap-1">
                          <Trash2 className="w-3 h-3" />
                          Remove All
                       </button>
@@ -593,7 +618,7 @@ function App() {
                               className="sr-only" 
                               onChange={handleFileSelect}
                           />
-                          <div className="w-full py-2.5 border border-dashed border-slate-300 rounded-xl text-slate-500 text-sm font-medium hover:bg-slate-50 hover:border-slate-400 transition-all flex items-center justify-center gap-2">
+                          <div className="w-full py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all flex items-center justify-center gap-2">
                               <Plus className="w-4 h-4" />
                               Add More
                           </div>
@@ -610,20 +635,20 @@ function App() {
               ) : (
                 /* Empty / Drop Zone */
                 <>
-                  <div className="w-16 h-16 bg-telegram-50 text-telegram-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 bg-telegram-50 dark:bg-telegram-900/30 text-telegram-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                     <UploadCloud className="w-8 h-8" />
                   </div>
-                  <h2 className="text-lg font-semibold text-slate-900">Upload to Cloud</h2>
-                  <p className="text-slate-500 max-w-sm mx-auto text-sm">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Upload to Cloud</h2>
+                  <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto text-sm">
                     Files are stored in Telegram and indexed in your Cloudflare Database.
                   </p>
 
-                  <div className="flex items-center justify-center gap-4 text-xs text-slate-400 py-2">
-                      <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                  <div className="flex items-center justify-center gap-4 text-xs text-slate-400 dark:text-slate-500 py-2">
+                      <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
                           <Info className="w-3 h-3" />
                           <span>Max Upload: 50MB</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                      <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
                           <Info className="w-3 h-3" />
                           <span>Max Download: 20MB</span>
                       </div>
@@ -646,7 +671,7 @@ function App() {
                      <button 
                         onClick={() => setIsImportOpen(true)}
                         disabled={!config.botToken}
-                        className="px-6 py-3 rounded-xl font-medium text-telegram-600 bg-telegram-50 hover:bg-telegram-100 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        className="px-6 py-3 rounded-xl font-medium text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 hover:bg-telegram-100 dark:hover:bg-telegram-900/50 transition-colors flex items-center gap-2 disabled:opacity-50"
                      >
                         <Import className="w-5 h-5" />
                         <span>Import ID</span>
@@ -659,19 +684,19 @@ function App() {
 
           {/* Breadcrumbs & Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-8">
-            <div className="flex items-center gap-2 text-sm text-slate-600 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 overflow-x-auto pb-1 sm:pb-0">
                <button 
                  onClick={() => handleNavigate(null, '')}
-                 className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 ${currentFolderId === null ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100'}`}
+                 className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 ${currentFolderId === null ? 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                >
                  <Home className="w-4 h-4" />
                </button>
                {breadcrumbs.slice(1).map((crumb, i) => (
                   <div key={crumb.id || i} className="flex items-center gap-2">
-                     <ChevronRight className="w-4 h-4 text-slate-300" />
+                     <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
                      <button 
                         onClick={() => handleNavigate(crumb.id, crumb.name)}
-                        className={`font-medium px-2 py-1 rounded-lg transition-colors whitespace-nowrap ${currentFolderId === crumb.id ? 'bg-slate-200 text-slate-900' : 'hover:bg-slate-100 text-slate-600'}`}
+                        className={`font-medium px-2 py-1 rounded-lg transition-colors whitespace-nowrap ${currentFolderId === crumb.id ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
                      >
                         {crumb.name}
                      </button>
@@ -683,13 +708,13 @@ function App() {
                <button
                  onClick={() => setIsCreateFolderOpen(true)}
                  disabled={!config.workerUrl}
-                 className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-telegram-600 hover:border-telegram-200 rounded-lg text-sm font-medium transition-all shadow-sm"
+                 className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-telegram-600 dark:hover:text-telegram-400 hover:border-telegram-200 dark:hover:border-telegram-700 rounded-lg text-sm font-medium transition-all shadow-sm"
                >
                  <FolderPlus className="w-4 h-4" />
                  <span>New Folder</span>
                </button>
-               <div className="h-4 w-px bg-slate-200 mx-1 hidden sm:block"></div>
-               <div className="flex items-center gap-3 text-slate-400">
+               <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+               <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500">
                     <Database className="w-4 h-4" />
                     <span className="text-xs font-medium">{files.length} items</span>
                </div>
@@ -698,9 +723,9 @@ function App() {
 
           {/* Files Grid */}
           {files.length === 0 ? (
-            <div className="text-center py-20 opacity-50 bg-white border border-dashed border-slate-200 rounded-xl">
-                <HardDrive className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500 font-medium">This folder is empty.</p>
+            <div className="text-center py-20 opacity-50 bg-white dark:bg-slate-800 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
+                <HardDrive className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+                <p className="text-slate-500 dark:text-slate-400 font-medium">This folder is empty.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -163,22 +163,22 @@ export const FileCard: React.FC<FileCardProps> = ({
 
   return (
     <div 
-        className={`bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200 group p-4 flex items-center justify-between relative ${isFolder ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+        className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group p-4 flex items-center justify-between relative ${isFolder ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-750' : ''}`}
     >
       {/* Left Side: Icon & Info */}
       <div className="flex items-center gap-4 overflow-hidden flex-1 mr-2">
         <div 
             onClick={isFolder ? undefined : handlePreview}
-            className={`w-12 h-12 flex items-center justify-center shrink-0 relative ${isFolder ? 'rounded-lg bg-yellow-50 text-yellow-500' : ''} ${isPreviewable ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
+            className={`w-12 h-12 flex items-center justify-center shrink-0 relative ${isFolder ? 'rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-500' : ''} ${isPreviewable ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
         >
           {isFolder ? (
-             <Folder className="w-8 h-8 fill-yellow-100" />
+             <Folder className="w-8 h-8 fill-yellow-100 dark:fill-yellow-900/40" />
           ) : (
              <div className="w-8 h-8 relative">
                  <FileIcon extension={extension} {...fileStyle} />
                  {/* Always show Eye icon if previewable, with better styling */}
                  {isPreviewable && (
-                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-slate-100 text-telegram-500">
+                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-700 rounded-full p-0.5 shadow-sm border border-slate-100 dark:border-slate-600 text-telegram-500 dark:text-telegram-400">
                         <Eye className="w-3 h-3" />
                     </div>
                  )}
@@ -187,10 +187,10 @@ export const FileCard: React.FC<FileCardProps> = ({
         </div>
         
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium text-slate-900 pr-2" title={fileName}>
+          <h3 className="text-sm font-medium text-slate-900 dark:text-slate-200 pr-2" title={fileName}>
             {fileName}
           </h3>
-          <div ref={metaContainerRef} className="flex flex-wrap items-center gap-2 mt-1 min-w-0 text-xs text-slate-500 overflow-hidden">
+          <div ref={metaContainerRef} className="flex flex-wrap items-center gap-2 mt-1 min-w-0 text-xs text-slate-500 dark:text-slate-400 overflow-hidden">
             {isFolder ? (
                 <span className="whitespace-nowrap">{folderInfoStr}</span>
             ) : (
@@ -198,10 +198,10 @@ export const FileCard: React.FC<FileCardProps> = ({
             )}
 
             {!isFolder && (
-              <span className={`w-1 h-1 rounded-full bg-slate-300 shrink-0 ${showDot ? 'visible' : 'invisible'}`}></span>
+              <span className={`w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0 ${showDot ? 'visible' : 'invisible'}`}></span>
             )}
             
-            <span className="text-slate-400 whitespace-nowrap">{dateStr}</span>
+            <span className="text-slate-400 dark:text-slate-500 whitespace-nowrap">{dateStr}</span>
           </div>
         </div>
       </div>
@@ -210,36 +210,36 @@ export const FileCard: React.FC<FileCardProps> = ({
       <div className="relative shrink-0">
           <button 
             onClick={handleMenuButton}
-            className={`p-2 rounded-lg transition-colors ${isMenuOpen ? 'bg-slate-100 text-slate-600' : 'text-slate-400 hover:bg-slate-50'}`}
+            className={`p-2 rounded-lg transition-colors ${isMenuOpen ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
           >
             <MoreVertical className="w-5 h-5" />
           </button>
 
           {/* Dropdown Menu */}
           {isMenuOpen && (
-            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-50 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right" onClick={(e) => e.stopPropagation()}>
                 {!isFolder && (
                     <>
                         {isPreviewable && (
-                            <button onClick={handlePreview} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3">
+                            <button onClick={handlePreview} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                                 <Eye className="w-4 h-4 text-slate-400" /> Preview
                             </button>
                         )}
-                        <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3">
+                        <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                              {copied ? <Check className="w-4 h-4 text-green-500" /> : <LinkIcon className="w-4 h-4 text-slate-400" />}
                              Copy Link
                         </button>
-                        <button onClick={handleDownload} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3">
+                        <button onClick={handleDownload} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                             <Download className="w-4 h-4 text-slate-400" /> Download
                         </button>
-                        <div className="h-px bg-slate-100 my-1"></div>
+                        <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
                     </>
                 )}
                 
-                <button onClick={handleMoveClick} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3">
+                <button onClick={handleMoveClick} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                     <MoveRight className="w-4 h-4 text-orange-400" /> Move to...
                 </button>
-                <button onClick={handleDeleteClick} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3">
+                <button onClick={handleDeleteClick} className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3">
                     <Trash2 className="w-4 h-4" /> Delete
                 </button>
             </div>
