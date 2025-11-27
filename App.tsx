@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, Eye, Moon, Sun } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { AppConfig, TelegramUpdate, DEFAULT_WORKER_URL } from './types';
-import { formatBytes } from './constants';
+import { formatBytes, isFilePreviewable } from './constants';
 import { SettingsModal } from './components/SettingsModal';
 import { UploadSuccessModal } from './components/UploadSuccessModal';
 import { ImportModal } from './components/ImportModal';
@@ -43,12 +43,7 @@ const PendingFileItem = ({
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const isPreviewable = file.type.startsWith('image/') || 
-                        file.type.startsWith('video/') || 
-                        file.type.startsWith('audio/') || 
-                        file.type === 'application/pdf' ||
-                        file.type.startsWith('text/') ||
-                        /\.(txt|json|md|xml|js|ts|css|html|log|sql|ini|conf)$/i.test(file.name);
+  const isPreviewable = isFilePreviewable(file.name, file.type);
 
   useEffect(() => {
     // Create preview for supported media types

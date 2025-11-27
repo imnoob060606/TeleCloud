@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Download, Loader2, Link as LinkIcon, Check, Trash2, Folder, MoveRight, Eye, MoreVertical } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { TelegramMessage, AppConfig } from '../types';
-import { formatBytes } from '../constants';
+import { formatBytes, isFilePreviewable } from '../constants';
 import { getFileDownloadUrl } from '../services/telegramService';
 
 interface FileCardProps {
@@ -38,14 +38,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   const actionId = fileId || uniqueId; 
 
   // Updated to include text types
-  const isPreviewable = !isFolder && fileId && (
-      mimeType.startsWith('image/') || 
-      mimeType.startsWith('video/') || 
-      mimeType.startsWith('audio/') || 
-      mimeType.includes('pdf') ||
-      mimeType.startsWith('text/') ||
-      /\.(txt|json|md|xml|js|ts|css|html|log|sql|ini|conf)$/i.test(fileName)
-  );
+  const isPreviewable = !isFolder && fileId && isFilePreviewable(fileName, mimeType);
 
   // Helper to extract extension
   const getExtension = (name: string) => {

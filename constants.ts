@@ -9,12 +9,13 @@ export const formatBytes = (bytes: number, decimals = 2) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
-export const getMimeIcon = (mimeType: string | undefined) => {
-  if (!mimeType) return 'file';
-  if (mimeType.startsWith('image/')) return 'image';
-  if (mimeType.startsWith('video/')) return 'video';
-  if (mimeType.startsWith('audio/')) return 'audio';
-  if (mimeType.includes('pdf')) return 'pdf';
-  if (mimeType.includes('zip') || mimeType.includes('compressed')) return 'archive';
-  return 'file';
-};
+export const isFilePreviewable = (fileName: string, mimeType: string) => {
+  return (
+    mimeType.startsWith('image/') || 
+    mimeType.startsWith('video/') || 
+    mimeType.startsWith('audio/') || 
+    mimeType.includes('pdf') ||
+    mimeType.startsWith('text/') ||
+    /\.(txt|json|md|xml|js|ts|tsx|jsx|css|html|log|sql|ini|conf|py|java|c|cpp|h|sh|yml|yaml|rb|php|go|rs)$/i.test(fileName)
+  );
+}
