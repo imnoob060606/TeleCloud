@@ -64,7 +64,7 @@ export default {
         return await handleImport(request, env.DB, headerToken);
       }
       if (path === '/delete' && request.method === 'POST') {
-        return await handleDelete(request, env.DB);
+        return await handleDelete(request, env.DB, headerToken);
       }
       if (path === '/file_link' && request.method === 'GET') {
         const fileId = url.searchParams.get('file_id');
@@ -128,12 +128,37 @@ async function handleFileProxy(db, envToken, fileId, fileName) {
   const newHeaders = new Headers(fileRes.headers);
   newHeaders.set('Access-Control-Allow-Origin', '*');
   
-  // Force download or display based on type? 
-  // If fileName is provided, set Content-Disposition
+  // Determine if it should be displayed inline (preview) or downloaded (attachment)
+  // We added PDF, TXT, JSON, JS, HTML, etc. to the preview list
+  let isPreview = false;
+  let forcedMime = null;
+
   if (fileName) {
-    // Simple logic: if image/video display inline, else attachment
-    const isPreview = /\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i.test(fileName);
-    newHeaders.set('Content-Disposition', `${isPreview ? 'inline' : 'attachment'}; filename="${fileName}"`);
+    const ext = fileName.split('.').pop().toLowerCase();
+    
+    // Media
+    if (/^(jpg|jpeg|png|gif|webp|mp4|webm|svg)$/.test(ext)) isPreview = true;
+    
+    // Documents / Text
+    if (/^(pdf|txt|json|js|css|html|xml|md|log|sql|ts|tsx|jsx)$/.test(ext)) {
+        isPreview = true;
+        // Fix Content-Type for correct browser rendering if Telegram sends generic stream
+        if(ext === 'pdf') forcedMime = 'application/pdf';
+        if(ext === 'json') forcedMime = 'application/json';
+        if(ext === 'txt') forcedMime = 'text/plain';
+        if(ext === 'html') forcedMime = 'text/html';
+    }
+  }
+
+  // Override Content-Disposition
+  newHeaders.set(
+      'Content-Disposition', 
+      `${isPreview ? 'inline' : 'attachment'}; filename="${fileName || 'file'}"`
+  );
+
+  // Override Content-Type if necessary (e.g. for PDF preview to work in iframe)
+  if (forcedMime) {
+      newHeaders.set('Content-Type', forcedMime);
   }
 
   return new Response(fileRes.body, {
@@ -314,12 +339,12 @@ async function handleImport(request, db, token) {
   });
 }
 
-async function handleDelete(request, db) {
+async function handleDelete(request, db, token) {
     const { file_id } = await request.json();
 
     // First, find the item to see if it's a folder
-    const item = await db.prepare("SELECT id, is_folder FROM files WHERE chat_id = ? AND (file_id = ? OR file_unique_id = ?)").bind(HEADER_CHAT_ID, file_id, file_id).first();
-    
+    const item = await db.prepare("SELECT id, message_id, is_folder FROM files WHERE chat_id = ? AND (file_id = ? OR file_unique_id = ?)").bind(HEADER_CHAT_ID, file_id, file_id).first();
+    let delResult = { msg: "not found" };
     if (item) {
         if (item.is_folder) {
             // Delete content recursively (simple 1-level depth for now, or just delete children)
@@ -327,10 +352,21 @@ async function handleDelete(request, db) {
             // Ideally, the frontend warns about non-empty folders.
             await db.prepare("DELETE FROM files WHERE chat_id = ? AND parent_id = ?").bind(HEADER_CHAT_ID, item.id).run();
         }
+        const tgRes = await fetch(`https://api.telegram.org/bot${token}/deleteMessage`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ chat_id: HEADER_CHAT_ID, message_id: item.message_id })
+        });
+        const data = await tgRes.json();
         await db.prepare("DELETE FROM files WHERE id = ?").bind(item.id).run();
+
+        delResult = { msg: "only db data deleted" };
+        if(data){
+          delResult = { msg: "db data deleted", tgRes: data };
+        }
     }
     
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ ok: true, result: delResult}), {
         headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
     });
 }
@@ -355,7 +391,7 @@ async function saveMessageToDb(db, msg, parentId = null) {
     const fileId = doc?.file_id || photo?.file_id;
     const uniqueId = doc?.file_unique_id || photo?.file_unique_id;
     const fileName = doc?.file_name || `photo_${msg.date}.jpg`;
-    const mimeType = doc?.mime_type || 'image/jpeg';
+    const mimeType = doc?.mime_type || 'application/octet-stream';
     const fileSize = doc?.file_size || photo?.file_size;
     const isPhoto = !!photo;
     // Convert parentId to null if "null" string or undefined
