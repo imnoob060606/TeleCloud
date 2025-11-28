@@ -29,7 +29,7 @@ export default {
     try {
       // --- Public / Protected Endpoints (No Client Headers required) ---
       
-      if (path === '/file_proxy' && request.method === 'GET') {
+      if (path === '/fp' && request.method === 'GET') {
         const fileId = url.searchParams.get('file_id');
         const fileName = url.searchParams.get('file_name');
         return await handleFileProxy(env.DB, env.BOT_TOKEN, fileId, fileName);

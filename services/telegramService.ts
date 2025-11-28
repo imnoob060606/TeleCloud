@@ -111,7 +111,7 @@ export const getFileDownloadUrl = (config: AppConfig, fileId: string, fileName?:
     const baseUrl = config.workerUrl.replace(/\/$/, '');
     const workerOrigin = baseUrl.startsWith('http') ? baseUrl : `${window.location.origin}${baseUrl}`;
     const encodedName = fileName ? encodeURIComponent(fileName) : '';
-    return `${workerOrigin}/file_proxy?file_id=${fileId}&file_name=${encodedName}`;
+    return `${workerOrigin}/fp?file_id=${fileId}&file_name=${encodedName}`;
 };
 
 export const uploadDocument = (
