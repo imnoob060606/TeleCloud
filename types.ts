@@ -50,6 +50,7 @@ export interface AppConfig {
   botToken: string;
   chatId: string;
   workerUrl: string; // URL of your deployed Cloudflare Worker
+  language?: string;
 }
 
 // Standard response from our Worker API

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Download, X, Loader2, Link as LinkIcon, AlertCircle } from 'lucide-react';
-import { AppConfig, TelegramUpdate, TelegramMessage } from '../types';
+import { AppConfig, TelegramUpdate } from '../types';
 import { importFile } from '../services/telegramService';
+import { t } from '../constants';
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
   const [input, setInput] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const lang = config?.language;
 
   if (!isOpen) return null;
 
@@ -103,7 +105,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
           }
           addStr += ")";
         }
-        setStatus(`Successfully imported ${successCount} files. ${addStr}`);
+        setStatus(`Success: ${successCount} imported. ${addStr}`);
         setTimeout(() => {
             onClose();
             setInput('');
@@ -122,7 +124,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
         <div className="p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
             <Download className="w-5 h-5 text-telegram-500" />
-            <h2 className="font-semibold text-lg">Import Existing Files</h2>
+            <h2 className="font-semibold text-lg">{t(lang, 'import_title')}</h2>
           </div>
           <button onClick={onClose} disabled={isImporting} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X className="w-5 h-5" />
@@ -132,15 +134,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
         <div className="p-6 space-y-4">
           <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-300 flex gap-2">
              <AlertCircle className="w-5 h-5 shrink-0" />
-             <p>
-                Bot API cannot scan history. To add existing files, enter their <strong>Message Link</strong> or <strong>ID</strong>.
-                <br/>
-                <span className="text-xs opacity-75 mt-1 block">Tip: Right click a message in Telegram &gt; Copy Link.</span>
+             <p>{t(lang, 'import_desc')}
+              <br/>
+                <span className="text-xs opacity-75 mt-1 block">{t(lang, "import_desc_2")}</span>
              </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message Link(s) or ID(s)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t(lang, 'import_input_label')}</label>
             <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -148,7 +149,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
                 className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-telegram-500 focus:ring-2 focus:ring-telegram-100 dark:focus:ring-telegram-900 outline-none text-sm min-h-[100px]"
                 disabled={isImporting}
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Separate multiple IDs with commas. Use '100-110' for ranges.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">{t(lang, "import_input_info")}</p>
           </div>
 
           {status && (
@@ -164,7 +165,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
             disabled={isImporting}
             className="px-4 py-2 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
           >
-            Cancel
+            {t(lang, 'cancel')}
           </button>
           <button
             onClick={handleImport}
@@ -172,7 +173,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, confi
             className="px-6 py-2 bg-telegram-500 hover:bg-telegram-600 text-white text-sm font-medium rounded-lg shadow-sm shadow-telegram-500/20 transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
-            <span>Import Files</span>
+            <span>{t(lang, 'import_btn')}</span>
           </button>
         </div>
       </div>

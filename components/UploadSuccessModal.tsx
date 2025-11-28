@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, Copy, X, ShieldCheck, FileText } from 'lucide-react';
+import { t } from '../constants';
+import { AppConfig } from '../types';
 
 interface UploadedFile {
   url: string;
@@ -10,10 +12,12 @@ interface UploadSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   files: UploadedFile[];
+  config: AppConfig;
 }
 
-export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, onClose, files }) => {
+export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, onClose, files, config }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const lang = config?.language;
 
   if (!isOpen) return null;
 
@@ -30,7 +34,7 @@ export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, 
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <CheckCircle className="w-5 h-5" />
             <h2 className="font-semibold text-lg">
-              {files.length > 1 ? 'Uploads Successful' : 'Upload Successful'}
+              {files.length > 1 ? t(lang, 'upload_success_multi_title') : t(lang, 'upload_success_title')}
             </h2>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
@@ -42,13 +46,13 @@ export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, 
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg flex gap-3 shrink-0">
             <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
             <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                <strong>Protected:</strong> These links proxy traffic through your Worker. Your Telegram Bot Token is hidden.
+                {t(lang, 'protected_link')}
             </p>
           </div>
 
           <div className="space-y-3">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {files.length} File{files.length !== 1 && 's'} Uploaded
+              {files.length} {t(lang, 'files_uploaded')}
             </label>
             
             <div className="space-y-3">
@@ -69,7 +73,7 @@ export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, 
                     <button 
                         onClick={() => handleCopy(file.url, idx)}
                         className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md transition-colors flex items-center justify-center min-w-[40px]"
-                        title="Copy Link"
+                        title={t(lang, 'copy_link')}
                     >
                         {copiedIndex === idx ? <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" /> : <Copy className="w-4 h-4" />}
                     </button>
@@ -85,7 +89,7 @@ export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ isOpen, 
             onClick={onClose}
             className="px-6 py-2 bg-telegram-500 hover:bg-telegram-600 text-white text-sm font-medium rounded-lg transition-colors"
           >
-            Done
+            {t(lang, 'done')}
           </button>
         </div>
       </div>

@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { FolderPlus, X, Loader2 } from 'lucide-react';
+import { t } from '../constants';
+import { AppConfig } from '../types';
 
 interface CreateFolderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (name: string) => Promise<void>;
+  config: AppConfig;
 }
 
-export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, onClose, onCreate }) => {
+export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, onClose, onCreate, config }) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const lang = config?.language;
 
   if (!isOpen) return null;
 
@@ -24,7 +28,6 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
       onClose();
     } catch (err) {
       console.error(err);
-      // Optional: Show error
     } finally {
       setIsLoading(false);
     }
@@ -36,7 +39,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
         <div className="p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
             <FolderPlus className="w-5 h-5 text-telegram-500" />
-            <h2 className="font-semibold text-lg">New Folder</h2>
+            <h2 className="font-semibold text-lg">{t(lang, 'new_folder')}</h2>
           </div>
           <button onClick={onClose} disabled={isLoading} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X className="w-5 h-5" />
@@ -45,7 +48,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Folder Name</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t(lang, 'folder_name')}</label>
             <input
               autoFocus
               type="text"
@@ -64,7 +67,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
               disabled={isLoading}
               className="px-4 py-2 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
-              Cancel
+              {t(lang, 'cancel')}
             </button>
             <button
               type="submit"
@@ -72,7 +75,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
               className="px-6 py-2 bg-telegram-500 hover:bg-telegram-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              Create
+              {t(lang, 'create')}
             </button>
           </div>
         </form>

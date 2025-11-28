@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, Eye, Moon, Sun, Search, ListFilter, ArrowDownNarrowWide, ArrowUpNarrowWide, Check } from 'lucide-react';
+import { Settings, UploadCloud, RefreshCw, Shield, HardDrive, Import, Database, FolderPlus, Home, ChevronRight, Info, FileText, CheckCircle2, AlertCircle, X, Trash2, Plus, Eye, Moon, Sun, Search, ListFilter, ArrowDownNarrowWide, ArrowUpNarrowWide, Check, Globe } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { AppConfig, TelegramUpdate, DEFAULT_WORKER_URL, SortConfig, SortField, SortOrder } from './types';
-import { formatBytes, isFilePreviewable } from './constants';
+import { formatBytes, isFilePreviewable, t } from './constants';
 import { SettingsModal } from './components/SettingsModal';
 import { UploadSuccessModal } from './components/UploadSuccessModal';
 import { ImportModal } from './components/ImportModal';
@@ -34,12 +34,14 @@ const PendingFileItem = ({
   file, 
   onRemove, 
   onUpload,
-  onPreview
+  onPreview,
+  lang
 }: { 
   file: File, 
   onRemove: () => void, 
   onUpload: () => void,
-  onPreview: (url: string, name: string, mime: string) => void
+  onPreview: (url: string, name: string, mime: string) => void,
+  lang?: string
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -120,7 +122,7 @@ const PendingFileItem = ({
                             className="text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 hover:bg-telegram-100 dark:hover:bg-telegram-900/50 px-1.5 rounded text-[10px] font-medium transition-colors flex items-center gap-1"
                         >
                             <Eye className="w-3 h-3" />
-                            Preview
+                            {t(lang, 'preview')}
                         </button>
                     )}
                 </div>
@@ -153,9 +155,12 @@ function App() {
     return saved ? JSON.parse(saved) : {
       botToken: '',
       chatId: '',
-      workerUrl: DEFAULT_WORKER_URL
+      workerUrl: DEFAULT_WORKER_URL,
+      language: 'en'
     };
   });
+
+  const lang = config.language;
 
   // Dark Mode State
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -189,6 +194,9 @@ function App() {
   // Sort State
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'date', order: 'desc' });
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+
+  // Language Menu State
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   // Upload State
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -232,6 +240,7 @@ function App() {
     const handleClickOutside = () => {
         setActiveMenuId(null);
         setIsSortMenuOpen(false);
+        setIsLangMenuOpen(false);
     };
     window.addEventListener('click', handleClickOutside);
     return () => window.removeEventListener('click', handleClickOutside);
@@ -262,20 +271,21 @@ function App() {
       console.error(err);
       setError({
         type: "error",
-        message: "Failed to fetch files. Ensure Worker is deployed and configured."
+        message: t(lang, 'fetch_failed')
       });
     } finally {
       setIsLoading(false);
     }
-  }, [config, currentFolderId, searchQuery, sortConfig]);
+  }, [config.botToken, config.chatId, config.workerUrl, currentFolderId, searchQuery, sortConfig, lang]);
 
   // Refresh when config or folder changes
   useEffect(() => {
     if (config.botToken && config.chatId) {
+      console.log('here?');
       fetchFiles();
       setActiveMenuId(null); // Close menus on navigation
     }
-  }, [config, fetchFiles]);
+  }, [config.botToken, config.chatId, config.workerUrl, fetchFiles]);
 
   // Handle Search
   useEffect(() => {
@@ -288,7 +298,7 @@ function App() {
                 setFiles(results);
             } catch (e) {
                 console.error(e);
-                setError("Search failed.");
+                setError({ type: "error", message: t(lang, 'search_failed') });
             } finally {
                 setIsSearching(false);
                 setIsLoading(false);
@@ -300,7 +310,7 @@ function App() {
     }, 400);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery, config, fetchFiles]);
+  }, [searchQuery, config, fetchFiles, lang]);
 
   // Speed Calculation & Progress Update Interval
   useEffect(() => {
@@ -367,7 +377,7 @@ function App() {
       if (skippedCount > 0) {
           setError({
             type: "error",
-            message: `Skipped ${skippedCount} files larger than 50MB.`
+            message: t(lang, 'skipped_large_files').replace('__count__', skippedCount.toString())
           });
       } else {
           setError(null);
@@ -512,14 +522,14 @@ function App() {
           if (uploadStatuses.some(s => s.status === 'error')) {
               setError({
                 type: "error",
-                message: "Some uploads failed."
+                message: t(lang, 'some_uploads_failed')
               });
           }
       }
       
     } catch (err: any) {
       console.error(err);
-      setError({type: "error", message: err.message || "Upload failed."});
+      setError({type: "error", message: err.message || t(lang, 'upload_failed')});
     } finally {
       setTimeout(() => {
           setIsUploading(false);
@@ -545,7 +555,7 @@ function App() {
           } else {
             fetchFiles();
             if(success.data?.msgLinks?.length){
-              let errMsg = "This message is older than 48 hours and must be deleted manually: ";
+              let errMsg = t(lang, 'msg_older_than_48h');
               
               setError({
                 type: "warning",
@@ -559,11 +569,11 @@ function App() {
             }
           }
       } else {
-          setError({type: "error", message: "Failed to delete file from database."});
+          setError({type: "error", message: t(lang, 'delete_failed')});
       }
     } catch (err) {
       console.error(err);
-      setError({type: "error", message: "An error occurred while deleting."});
+      setError({type: "error", message: t(lang, 'delete_error')});
     } finally {
       setIsDeleting(false);
       setFileToDelete(null);
@@ -575,7 +585,7 @@ function App() {
           await createFolder(config, name, currentFolderId);
           fetchFiles();
       } catch (e) {
-          setError({type: "error", message: "Failed to create folder."});
+          setError({type: "error", message: t(lang, 'create_folder_failed')});
       }
   };
 
@@ -584,7 +594,7 @@ function App() {
       if (searchQuery) setSearchQuery('');
 
       if (folderId === null) {
-          setBreadcrumbs([{ id: null, name: 'Home' }]);
+          setBreadcrumbs([{ id: null, name: t(lang, 'home') }]);
           setCurrentFolderId(null);
       } else {
           const existingIndex = breadcrumbs.findIndex(b => b.id === folderId);
@@ -608,7 +618,7 @@ function App() {
              fetchFiles();
           }
       } catch (e) {
-          setError({type: "error", message: "Failed to move file."});
+          setError({type: "error", message: t(lang, 'move_file_failed')});
       } finally {
           setFileToMove(null);
       }
@@ -618,6 +628,11 @@ function App() {
       setSortConfig({ field, order });
       setIsSortMenuOpen(false);
       // Fetch will automatically trigger due to dependency array
+  };
+
+  const handleLanguageChange = (l: string) => {
+      setConfig(prev => ({ ...prev, language: l }));
+      setIsLangMenuOpen(false);
   };
 
   return (
@@ -631,13 +646,49 @@ function App() {
                   <UploadCloud className="text-white w-6 h-6" />
                 </div>
                 <div>
-                <h1 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight leading-none">TeleCloud</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Persistent Cloud Storage (CF Worker)</p>
+                <h1 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight leading-none">{t(lang, 'app_title')}</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">{t(lang, 'app_subtitle')}</p>
                 </div>
             </div>
             
             {/* Mobile Actions Right */}
             <div className="flex items-center gap-3 sm:hidden">
+                {/* Language Switcher Mobile */}
+                <div className="relative">
+                    <button 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsLangMenuOpen(!isLangMenuOpen);
+                            setIsSortMenuOpen(false);
+                        }}
+                        className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
+                        title={t(lang, 'language')}
+                    >
+                        <Globe className="w-5 h-5" />
+                    </button>
+                    {isLangMenuOpen && (
+                        <div 
+                            className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-30 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => handleLanguageChange('en')}
+                                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                            >
+                                English
+                                {lang === 'en' && <Check className="w-4 h-4 text-telegram-500" />}
+                            </button>
+                            <button
+                                onClick={() => handleLanguageChange('zh')}
+                                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                            >
+                                中文
+                                {lang === 'zh' && <Check className="w-4 h-4 text-telegram-500" />}
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 <button
                     onClick={() => setIsDarkMode(!isDarkMode)}
                     className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
@@ -669,7 +720,7 @@ function App() {
                type="text"
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
-               placeholder="Search files..."
+               placeholder={t(lang, 'search_placeholder')}
                className="block w-full pl-10 pr-10 py-2 border border-slate-200 dark:border-slate-600 rounded-xl leading-5 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-telegram-500 focus:ring-1 focus:ring-telegram-500 sm:text-sm transition-all"
              />
              {searchQuery && (
@@ -683,11 +734,47 @@ function App() {
           </div>
           
           <div className="hidden sm:flex items-center gap-3">
+            {/* Language Switcher Desktop */}
+            <div className="relative">
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsLangMenuOpen(!isLangMenuOpen);
+                        setIsSortMenuOpen(false);
+                    }}
+                    className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
+                    title={t(lang, 'language')}
+                >
+                    <Globe className="w-5 h-5" />
+                </button>
+                {isLangMenuOpen && (
+                    <div 
+                        className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-30 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => handleLanguageChange('en')}
+                            className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                        >
+                            English
+                            {lang === 'en' && <Check className="w-4 h-4 text-telegram-500" />}
+                        </button>
+                        <button
+                            onClick={() => handleLanguageChange('zh')}
+                            className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                        >
+                            中文
+                            {lang === 'zh' && <Check className="w-4 h-4 text-telegram-500" />}
+                        </button>
+                    </div>
+                )}
+            </div>
+
             {/* Dark Mode Toggle */}
             <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
-                title="Toggle Theme"
+                title={t(lang, "toggle_theme")}
             >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -695,7 +782,7 @@ function App() {
             <button 
               onClick={fetchFiles}
               className="p-2 text-slate-400 hover:text-telegram-500 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-all"
-              title="Refresh List"
+              title={t(lang, 'refresh')}
             >
               <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -704,7 +791,7 @@ function App() {
               className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium text-sm transition-colors"
             >
               <Settings className="w-4 h-4" />
-              <span className="hidden min-[480px]:inline">Settings</span>
+              <span className="hidden min-[480px]:inline">{t(lang, 'settings')}</span>
             </button>
           </div>
         </div>
@@ -759,7 +846,7 @@ function App() {
                 {isUploading ? (
                     <div className="max-w-xl mx-auto space-y-3 py-2 text-left">
                         <div className="flex items-center justify-between text-sm mb-2 border-b border-slate-100 dark:border-slate-700 pb-2">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">Uploading {uploadStatuses.length} files...</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200">{t(lang, 'uploading')} {uploadStatuses.length} {t(lang, 'files_uploaded').replace('File(s) Uploaded', 'files')}...</span>
                             <span className="text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 px-2 py-0.5 rounded text-xs font-mono">{networkSpeed}</span>
                         </div>
                         
@@ -797,12 +884,12 @@ function App() {
                     <div className="text-left w-full max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <div className="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800 dark:text-white text-lg">Selected Files</span>
+                            <span className="font-bold text-slate-800 dark:text-white text-lg">{t(lang, 'selected_files')}</span>
                             <span className="bg-telegram-100 dark:bg-telegram-900/50 text-telegram-700 dark:text-telegram-300 px-2 py-0.5 rounded-full text-xs font-medium">{pendingFiles.length}</span>
                         </div>
                         <button onClick={handleClearPending} className="text-red-500 text-xs hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded transition-colors flex items-center gap-1">
                             <Trash2 className="w-3 h-3" />
-                            Remove All
+                            {t(lang, 'remove_all')}
                         </button>
                     </div>
 
@@ -814,6 +901,7 @@ function App() {
                                 onRemove={() => handleRemovePending(i)} 
                                 onUpload={() => startUploadProcess([file])}
                                 onPreview={(url, name, mime) => setPreviewFile({url, name, mime})}
+                                lang={lang}
                             />
                         ))}
                     </div>
@@ -828,7 +916,7 @@ function App() {
                             />
                             <div className="w-full py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all flex items-center justify-center gap-2">
                                 <Plus className="w-4 h-4" />
-                                Add More
+                                {t(lang, 'add_more')}
                             </div>
                         </label>
                         <button 
@@ -836,7 +924,7 @@ function App() {
                             className="flex-[2] py-2.5 bg-telegram-500 hover:bg-telegram-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-telegram-500/20 transition-all flex items-center justify-center gap-2"
                         >
                             <UploadCloud className="w-4 h-4" />
-                            Upload All ({pendingFiles.length})
+                            {t(lang, 'upload_all')} ({pendingFiles.length})
                         </button>
                     </div>
                     </div>
@@ -846,19 +934,19 @@ function App() {
                     <div className="w-16 h-16 bg-telegram-50 dark:bg-telegram-900/30 text-telegram-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                         <UploadCloud className="w-8 h-8" />
                     </div>
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Upload to Cloud</h2>
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t(lang, 'upload_title')}</h2>
                     <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto text-sm">
-                        Files are stored in Telegram and indexed in your Cloudflare Database.
+                        {t(lang, 'upload_subtitle')}
                     </p>
 
                     <div className="flex items-center justify-center gap-4 text-xs text-slate-400 dark:text-slate-500 py-2">
                         <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
                             <Info className="w-3 h-3" />
-                            <span>Max Upload: 50MB</span>
+                            <span>{t(lang, 'max_upload')}</span>
                         </div>
                         <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
                             <Info className="w-3 h-3" />
-                            <span>Max Download: 20MB</span>
+                            <span>{t(lang, 'max_download')}</span>
                         </div>
                     </div>
                     
@@ -872,7 +960,7 @@ function App() {
                                 disabled={!config.botToken}
                             />
                             <span className={`px-6 py-3 rounded-xl font-medium text-white shadow-lg shadow-telegram-500/25 transition-all transform hover:translate-y-[-2px] active:translate-y-0 ${!config.botToken ? 'bg-slate-400 cursor-not-allowed' : 'bg-telegram-500 hover:bg-telegram-600'}`}>
-                                {config.botToken ? 'Select Files' : 'Configure Settings First'}
+                                {config.botToken ? t(lang, 'select_files') : t(lang, 'configure_first')}
                             </span>
                         </label>
                         
@@ -882,7 +970,7 @@ function App() {
                             className="px-6 py-3 rounded-xl font-medium text-telegram-600 dark:text-telegram-400 bg-telegram-50 dark:bg-telegram-900/30 hover:bg-telegram-100 dark:hover:bg-telegram-900/50 transition-colors flex items-center gap-2 disabled:opacity-50"
                         >
                             <Import className="w-5 h-5" />
-                            <span>Import ID</span>
+                            <span>{t(lang, 'import_id')}</span>
                         </button>
                     </div>
                     </>
@@ -895,8 +983,8 @@ function App() {
                         <div className="bg-telegram-50 dark:bg-telegram-900/30 p-6 rounded-full shadow-xl shadow-telegram-500/10 mb-4 animate-bounce">
                             <UploadCloud className="w-12 h-12 text-telegram-500" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">Drop files to upload</h3>
-                        <p className="text-slate-500 dark:text-slate-400 mt-2">Release to add to pending list</p>
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">{t(lang, 'drop_title')}</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mt-2">{t(lang, 'drop_subtitle')}</p>
                     </div>
                 )}
             </div>
@@ -944,7 +1032,7 @@ function App() {
                             className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-telegram-600 dark:hover:text-telegram-400 hover:border-telegram-200 dark:hover:border-telegram-700 rounded-lg text-sm font-medium transition-all shadow-sm"
                         >
                             {sortConfig.order === 'asc' ? <ArrowUpNarrowWide className="w-4 h-4" /> : <ArrowDownNarrowWide className="w-4 h-4" />}
-                            <span className="hidden min-[480px]:inline">Sort</span>
+                            <span className="hidden min-[480px]:inline">{t(lang, 'sort')}</span>
                         </button>
                         
                         {isSortMenuOpen && (
@@ -952,7 +1040,7 @@ function App() {
                                 className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-30 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right"
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Sort By</div>
+                                <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">{t(lang, 'sort_by')}</div>
                                 
                                 {(['name', 'date', 'size'] as SortField[]).map(field => (
                                     <button
@@ -960,26 +1048,26 @@ function App() {
                                         onClick={() => handleSortChange(field, sortConfig.order)}
                                         className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between capitalize"
                                     >
-                                        {field}
+                                        {t(lang, field)}
                                         {sortConfig.field === field && <Check className="w-4 h-4 text-telegram-500" />}
                                     </button>
                                 ))}
                                 
                                 <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
-                                <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Order</div>
+                                <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">{t(lang, 'order')}</div>
 
                                 <button
                                     onClick={() => handleSortChange(sortConfig.field, 'asc')}
                                     className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
                                 >
-                                    Ascending
+                                    {t(lang, 'asc')}
                                     {sortConfig.order === 'asc' && <Check className="w-4 h-4 text-telegram-500" />}
                                 </button>
                                 <button
                                     onClick={() => handleSortChange(sortConfig.field, 'desc')}
                                     className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
                                 >
-                                    Descending
+                                    {t(lang, 'desc')}
                                     {sortConfig.order === 'desc' && <Check className="w-4 h-4 text-telegram-500" />}
                                 </button>
                             </div>
@@ -992,12 +1080,12 @@ function App() {
                         className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-telegram-600 dark:hover:text-telegram-400 hover:border-telegram-200 dark:hover:border-telegram-700 rounded-lg text-sm font-medium transition-all shadow-sm"
                     >
                         <FolderPlus className="w-4 h-4" />
-                        <span className="hidden min-[480px]:inline">New Folder</span>
+                        <span className="hidden min-[480px]:inline">{t(lang, 'new_folder')}</span>
                     </button>
                     <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
                     <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500">
                             <Database className="w-4 h-4" />
-                            <span className="text-xs font-medium">{files.length} items</span>
+                            <span className="text-xs font-medium">{files.length} {t(lang, 'items')}</span>
                     </div>
                 </div>
             </div>
@@ -1009,12 +1097,12 @@ function App() {
                 {searchQuery !== '' ? (
                     <>
                         <Search className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">No files matching your search.</p>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">{t(lang, 'empty_search')}</p>
                     </>
                 ) : (
                     <>
                         <HardDrive className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">This folder is empty.</p>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">{t(lang, 'empty_folder')}</p>
                     </>
                 )}
             </div>
@@ -1047,15 +1135,41 @@ function App() {
         </div>
       </main>
 
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} config={config} onSave={setConfig} />
-      <ImportModal isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} config={config} onImportComplete={fetchFiles} />
-      <UploadSuccessModal isOpen={uploadedResults.length > 0} onClose={() => setUploadedResults([])} files={uploadedResults} />
-      <DeleteConfirmModal isOpen={!!fileToDelete} onClose={() => setFileToDelete(null)} onConfirm={handleConfirmDelete} fileName={fileToDelete?.name || 'File'} isDeleting={isDeleting} />
-      
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+        config={config} 
+        onSave={setConfig} 
+      />
+
+      <ImportModal 
+        isOpen={isImportOpen} 
+        onClose={() => setIsImportOpen(false)} 
+        config={config} 
+        onImportComplete={fetchFiles} 
+      />
+
+      <UploadSuccessModal 
+        isOpen={uploadedResults.length > 0} 
+        onClose={() => setUploadedResults([])} 
+        files={uploadedResults} 
+        config={config}
+      />
+
+      <DeleteConfirmModal 
+        isOpen={!!fileToDelete} 
+        onClose={() => setFileToDelete(null)} 
+        onConfirm={handleConfirmDelete} 
+        fileName={fileToDelete?.name || 'File'} 
+        isDeleting={isDeleting} 
+        config={config}
+      />
+
       <CreateFolderModal 
         isOpen={isCreateFolderOpen} 
         onClose={() => setIsCreateFolderOpen(false)} 
         onCreate={handleCreateFolder} 
+        config={config}
       />
       
       <MoveFileModal 

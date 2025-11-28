@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Download, Loader2, Link as LinkIcon, Check, Trash2, Folder, MoveRight, Eye, MoreVertical } from 'lucide-react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { TelegramMessage, AppConfig } from '../types';
-import { formatBytes, isFilePreviewable } from '../constants';
+import { formatBytes, isFilePreviewable, t } from '../constants';
 import { getFileDownloadUrl } from '../services/telegramService';
 
 interface FileCardProps {
@@ -35,7 +35,8 @@ export const FileCard: React.FC<FileCardProps> = ({
   const fileId = doc?.file_id || photo?.file_id;
   const uniqueId = doc?.file_unique_id || photo?.file_unique_id;
 
-  const actionId = fileId || uniqueId; 
+  const actionId = fileId || uniqueId;
+  const lang = config?.language;
 
   // Updated to include text types
   const isPreviewable = !isFolder && fileId && isFilePreviewable(fileName, mimeType).ok;
@@ -111,15 +112,18 @@ export const FileCard: React.FC<FileCardProps> = ({
       onMenuToggle();
   };
 
-  const dateStr = new Date(message.date * 1000).toLocaleDateString(undefined, {
-    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  let dateStrLang = undefined;
+  if(lang == "en") dateStrLang = "en-US";
+  if(lang == "zh") dateStrLang = "zh-CN";
+  const dateStr = new Date(message.date * 1000).toLocaleDateString(dateStrLang, {
+    year: 'numeric',  month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
   const folderStats = doc?.stats || { files: 0, folders: 0 };
   const folderInfo = [];
-  if (folderStats.folders > 0) folderInfo.push(`${folderStats.folders} folder${folderStats.folders !== 1 ? 's' : ''}`);
-  if (folderStats.files > 0) folderInfo.push(`${folderStats.files} file${folderStats.files !== 1 ? 's' : ''}`);
-  const folderInfoStr = folderInfo.length > 0 ? folderInfo.join(', ') : 'Empty';
+  if (folderStats.folders > 0) folderInfo.push(`${folderStats.folders} ${t(lang, "folder")}`);
+  if (folderStats.files > 0) folderInfo.push(`${folderStats.files} ${t(lang, "file")}`);
+  const folderInfoStr = folderInfo.length > 0 ? folderInfo.join(', ') : t(lang, 'empty');
 
   const [showDot, setShowDot] = useState(true);
   const metaContainerRef = useRef<HTMLDivElement>(null);
@@ -180,7 +184,7 @@ export const FileCard: React.FC<FileCardProps> = ({
         </div>
         
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium text-slate-900 dark:text-slate-200 pr-2" title={fileName}>
+          <h3 className="text-sm font-medium text-slate-900 dark:text-slate-200 pr-2 break-all" title={fileName}>
             {fileName}
           </h3>
           <div ref={metaContainerRef} className="flex flex-wrap items-center gap-2 mt-1 min-w-0 text-xs text-slate-500 dark:text-slate-400 overflow-hidden">
@@ -215,25 +219,25 @@ export const FileCard: React.FC<FileCardProps> = ({
                     <>
                         {isPreviewable && (
                             <button onClick={handlePreview} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                                <Eye className="w-4 h-4 text-slate-400" /> Preview
+                                <Eye className="w-4 h-4 text-slate-400" /> {t(lang, 'preview')}
                             </button>
                         )}
                         <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                              {copied ? <Check className="w-4 h-4 text-green-500" /> : <LinkIcon className="w-4 h-4 text-slate-400" />}
-                             Copy Link
+                             {t(lang, 'copy_link')}
                         </button>
                         <button onClick={handleDownload} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                            <Download className="w-4 h-4 text-slate-400" /> Download
+                            <Download className="w-4 h-4 text-slate-400" /> {t(lang, 'download')}
                         </button>
                         <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
                     </>
                 )}
                 
                 <button onClick={handleMoveClick} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                    <MoveRight className="w-4 h-4 text-orange-400" /> Move to...
+                    <MoveRight className="w-4 h-4 text-orange-400" /> {t(lang, 'move_to')}
                 </button>
                 <button onClick={handleDeleteClick} className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3">
-                    <Trash2 className="w-4 h-4" /> Delete
+                    <Trash2 className="w-4 h-4" /> {t(lang, 'delete')}
                 </button>
             </div>
           )}

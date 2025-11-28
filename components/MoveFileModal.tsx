@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FolderInput, X, Loader2, Folder, ArrowUp } from 'lucide-react';
 import { AppConfig, FolderItem } from '../types';
 import { getAllFolders } from '../services/telegramService';
+import { t } from '../constants';
 
 interface MoveFileModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
   const [folders, setFolders] = useState<FolderItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
+  const lang = config?.language;
 
   useEffect(() => {
     if (isOpen) {
@@ -49,7 +51,7 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
         <div className="p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
             <FolderInput className="w-5 h-5 text-telegram-500" />
-            <h2 className="font-semibold text-lg">Move to...</h2>
+            <h2 className="font-semibold text-lg">{t(lang, 'move_to')}</h2>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X className="w-5 h-5" />
@@ -72,13 +74,13 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
                         <div className="w-8 h-8 rounded bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-slate-500 dark:text-slate-300">
                             <ArrowUp className="w-4 h-4" />
                         </div>
-                        <span className="font-medium">Home Directory</span>
+                        <span className="font-medium">{t(lang, 'home_dir')}</span>
                     </button>
 
                     <div className="h-px bg-slate-100 dark:bg-slate-700 my-1 mx-2"></div>
 
                     {folders.filter(f => f.parent_id === null).length === 0 && (
-                        <p className="text-center text-xs text-slate-400 py-2">No other folders created</p>
+                        <p className="text-center text-xs text-slate-400 py-2">{t(lang, 'no_folders')}</p>
                     )}
 
                     {folders.map(folder => {
@@ -98,7 +100,7 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <span className="font-medium truncate block">{folder.name}</span>
-                                    {folder.parent_id && <span className="text-xs text-slate-400 dark:text-slate-500">Subfolder</span>}
+                                    {folder.parent_id && <span className="text-xs text-slate-400 dark:text-slate-500">{t(lang, 'subfolder')}</span>}
                                 </div>
                             </button>
                         );
