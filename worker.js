@@ -362,7 +362,12 @@ async function handleDelete(request, db, token) {
 
         delResult = { msg: "only db data deleted" };
         if(data){
-          delResult = { msg: "db data deleted", tgRes: data };
+          let msgLinks = [];
+          if(!data.ok){
+            const rawChatId = String(HEADER_CHAT_ID).replace(/^-100/, '');
+            msgLinks = [`https://t.me/c/${rawChatId}/${item.message_id}`];
+          }
+          delResult = { msg: "db data deleted", tgRes: data, msgLinks: msgLinks };
         }
     }
     

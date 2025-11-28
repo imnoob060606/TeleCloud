@@ -181,12 +181,12 @@ export const importFile = async (config: AppConfig, messageId: number, parentId:
   }
 };
 
-export const deleteFile = async (config: AppConfig, fileId: string): Promise<boolean> => {
+export const deleteFile = async (config: AppConfig, fileId: string): Promise<{ ok: boolean; data?: any; error?: any }> => {
     try {
-        await callWorker(config, '/delete', 'POST', { file_id: fileId });
-        return true;
+        const res = await callWorker(config, '/delete', 'POST', { file_id: fileId });
+        return { ok: true, data: res };
     } catch (e) {
         console.error("Delete error", e);
-        return false;
+        return { ok: false, error: e };
     }
 }

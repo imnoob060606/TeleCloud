@@ -197,7 +197,16 @@ function App() {
   const lastLoadedBytesRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
 
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{
+    type: string,
+    message: string,
+    links?: string[];
+    linkOptions?: {
+      linkText?: string;
+      showIcon?: boolean;
+      icon?: string;
+    }
+  } | null>(null);
   const [uploadedResults, setUploadedResults] = useState<{url: string, name: string}[]>([]);
   
   // Action states
@@ -237,7 +246,10 @@ function App() {
         setFiles(dbFiles);
     } catch (err: any) {
       console.error(err);
-      setError("Failed to fetch files. Ensure Worker is deployed and configured.");
+      setError({
+        type: "error",
+        message: "Failed to fetch files. Ensure Worker is deployed and configured."
+      });
     } finally {
       setIsLoading(false);
     }
@@ -314,7 +326,10 @@ function App() {
       });
 
       if (skippedCount > 0) {
-          setError(`Skipped ${skippedCount} files larger than 50MB.`);
+          setError({
+            type: "error",
+            message: `Skipped ${skippedCount} files larger than 50MB.`
+          });
       } else {
           setError(null);
       }
@@ -456,13 +471,16 @@ function App() {
           }, 800);
       } else {
           if (uploadStatuses.some(s => s.status === 'error')) {
-              setError("Some uploads failed.");
+              setError({
+                type: "error",
+                message: "Some uploads failed."
+              });
           }
       }
       
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Upload failed.");
+      setError({type: "error", message: err.message || "Upload failed."});
     } finally {
       setTimeout(() => {
           setIsUploading(false);
@@ -480,14 +498,27 @@ function App() {
     setIsDeleting(true);
     try {
       const success = await deleteFile(config, fileToDelete.id);
-      if (success) {
+      if (success.ok) {
           fetchFiles();
+          if(success.data?.msgLinks?.length){
+            let errMsg = "This message is older than 48 hours and must be deleted manually: ";
+            
+            setError({
+              type: "warning",
+              message: errMsg,
+              links: success.data.msgLinks,
+              linkOptions: {
+                showIcon: true,
+                icon: "↗",
+              }
+            });
+          }
       } else {
-          setError("Failed to delete file from database.");
+          setError({type: "error", message: "Failed to delete file from database."});
       }
     } catch (err) {
       console.error(err);
-      setError("An error occurred while deleting.");
+      setError({type: "error", message: "An error occurred while deleting."});
     } finally {
       setIsDeleting(false);
       setFileToDelete(null);
@@ -499,7 +530,7 @@ function App() {
           await createFolder(config, name, currentFolderId);
           fetchFiles();
       } catch (e) {
-          setError("Failed to create folder.");
+          setError({type: "error", message: "Failed to create folder."});
       }
   };
 
@@ -524,7 +555,7 @@ function App() {
           await moveFile(config, fileToMove.id, targetParentId);
           fetchFiles();
       } catch (e) {
-          setError("Failed to move file.");
+          setError({type: "error", message: "Failed to move file."});
       } finally {
           setFileToMove(null);
       }
@@ -578,9 +609,31 @@ function App() {
         <div className="space-y-6" style={{ marginLeft: '3%', marginRight: '3%' }}>
           
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 text-sm animate-in slide-in-from-top-2 break-words">
+            <div className={`${error.type == "warning" ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300" : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300" } px-4 py-3 rounded-xl flex items-center gap-3 text-sm animate-in slide-in-from-top-2 break-words`}>
               <Shield className="w-5 h-5 shrink-0" />
-              <span className="flex-1">{error}</span>
+              <span className="flex-1">
+                {error.message}
+
+                {error.links?.length && (
+                  <span className = "inline-flex gap-2">
+                    {error.links?.map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-telegram-700 hover:text-telegram-500 underline"
+                      >
+                        {error.linkOptions?.linkText?.replace("__idx__", (idx + 1).toString()) || url}
+                        &nbsp;
+                        {error.linkOptions?.showIcon && (
+                          error.linkOptions.icon
+                        )}
+                      </a>
+                    ))}
+                  </span>
+                )}
+              </span>
             </div>
           )}
 
