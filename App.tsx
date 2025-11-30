@@ -387,10 +387,6 @@ function App() {
     try {
         const dbFiles = await getStoredFiles(config, currentFolderId, sortConfig);
         setFiles(dbFiles);
-        setNotification({
-        type: "error",
-        messageKey: 'fetch_failed'
-      });
     } catch (err: any) {
       console.error(err);
       setNotification({
