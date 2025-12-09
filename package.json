@@ -8,23 +8,30 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npx wrangler pages deploy dist",
-    "publish": "vite build & npx wrangler pages deploy dist"
+    "publish": "vite build & npx wrangler pages deploy dist",
+    "exportschema": "npx wrangler d1 export telecloud-db --remote --output=./schema.sql --no-data"
   },
   "dependencies": {
+    "github-markdown-css": "^5.8.1",
     "html-react-parser": "^5.2.10",
+    "idb": "^8.0.3",
     "language-map": "^1.5.0",
     "lucide-react": "^0.554.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-file-icon": "^1.5.0",
+    "react-file-icon": "^1.6.0",
+    "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.0",
+    "remark-gfm": "^4.0.1",
     "telegram": "^2.26.22"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0",
+    "rollup-plugin-visualizer": "^6.0.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
     "wrangler": "^4.51.0"
   }
 }

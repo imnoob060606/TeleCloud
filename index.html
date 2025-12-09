@@ -1,56 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TeleCloud - Telegram File Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            colors: {
-              telegram: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                200: '#bae6fd',
-                500: '#229ED9',
-                600: '#1e88bd',
-                700: '#0369a1',
-                800: '#075985',
-                900: '#0c4a6e',
-              }
-            }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TeleCloud - Telegram File Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           },
+          colors: {
+            telegram: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#229ED9',
+              600: '#1e88bd',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
         },
-      }
-    </script>
-    <script type="importmap">
+      },
+    }
+  </script>
+  <script type="importmap">
     {
       "imports": {
-        "react": "https://esm.run/react@^19.2.0",
-        "react-dom": "https://esm.run/react-dom@^19.2.0",
+        "react": "https://esm.run/react@19.2.1",
+        "react-dom": "https://esm.run/react-dom@19.2.1",
         "lucide-react": "https://esm.run/lucide-react@^0.554.0",
         "telegram": "https://esm.run/telegram@^2.26.22",
-        "react-file-icon": "https://esm.run/react-file-icon@1.5.0",
+        "react-file-icon": "https://esm.run/react-file-icon@1.6.0",
         "react-syntax-highlighter": "https://esm.run/react-syntax-highlighter@16.1.0",
         "react-syntax-highlighter/dist/esm/styles/prism": "https://esm.run/react-syntax-highlighter@16.1.0/dist/esm/styles/prism",
         "language-map": "https://esm.run/language-map@^1.5.0",
         "highlight.js": "https://esm.run/highlightjs@10.7.3",
-        "html-react-parser": "https://esm.run/html-react-parser@^5.2.10"
+        "html-react-parser": "https://esm.run/html-react-parser@5.2.10",
+        "react-markdown": "https://esm.run/react-markdown@10.1.0",
+        "remark-gfm": "https://esm.run/remark-gfm@4.0.1"
       }
     }
     </script>
-    <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 antialiased h-[100dvh] overflow-hidden transition-colors duration-200">
-    <div id="root" class="h-full"></div>
+
+<body
+  class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 antialiased h-[100dvh] overflow-hidden transition-colors duration-200">
+  <div id="root" class="h-full"></div>
   <script type="module" src="/index.tsx"></script>
-  </body>
+</body>
+
 </html>
