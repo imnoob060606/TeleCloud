@@ -1,65 +1,59 @@
-import languageMap from 'language-map';
-import ReactHtmlParser from 'html-react-parser';
+import languageMap from "language-map";
+import ReactHtmlParser from "html-react-parser";
 
 export const TELEGRAM_API_BASE = "https://api.telegram.org";
 
 export const CHUNK_SIZE = 20 * 1024 * 1024; // 20mb
 
 export const formatBytes = (bytes: number, decimals = 2) => {
-  if (!+bytes) return '0 Bytes';
+  if (!+bytes) return "0 Bytes";
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
 export const isFilePreviewable = (fileName: string, mimeType: string) => {
-  if (
-    mimeType.startsWith("image/")
-  ) return { ok: true, type: "image" };
-
-  if (
-    mimeType.startsWith("video/")
-  ) return { ok: true, type: "video" };
-
-  if (
-    mimeType.startsWith('audio/')
-  ) return { ok: true, type: "audio" };
-
-  if (
-    mimeType.includes('pdf')
-  ) return { ok: true, type: "pdf" };
-
+  if (mimeType.startsWith("image/")) return { ok: true, type: "image" };
+  if (mimeType.startsWith("video/")) return { ok: true, type: "video" };
+  if (mimeType.startsWith("audio/")) return { ok: true, type: "audio" };
+  if (mimeType.includes("pdf")) return { ok: true, type: "pdf" };
   if (
     mimeType === "application/json" ||
     mimeType === "application/javascript" ||
-    mimeType === "application/xml"||
-    mimeType.startsWith('text/')
-  ) return { ok: true, type: "text" };
-  
+    mimeType === "application/xml" ||
+    mimeType.startsWith("text/")
+  )
+    return { ok: true, type: "text" };
+
   // ---- 5. 代码文件检测（依赖 GitHub Linguist）----
   const ext = fileName.split(".").pop()?.toLowerCase();
   if (ext) {
     for (const lang of Object.values(languageMap)) {
-      if ((lang as any).extensions?.includes("." + ext)) 
+      if ((lang as any).extensions?.includes("." + ext))
         return { ok: true, type: "text" };
     }
   }
-  
+
   return { ok: false, type: "unknown" };
-}
+};
 
 export const translations = {
   en: {
     app_title: "TeleCloud",
     app_subtitle: "Persistent Cloud Storage (CF Worker)",
+    theme: "Theme",
+    theme_light: "Light Mode",
+    theme_dark: "Dark Mode",
+    theme_system: "Follow System",
     toggle_theme: "Toggle Theme",
     settings: "Settings",
     refresh: "Refresh",
     search_placeholder: "Search files...",
     upload_title: "Upload to Cloud",
-    upload_subtitle: "Files are stored in Telegram and indexed in your Cloudflare Database.",
+    upload_subtitle:
+      "Files are stored in Telegram and indexed in your Cloudflare Database.",
     max_upload: "Max Upload: 50MB",
     max_download: "Max Download: 20MB",
     select_files: "Select Files",
@@ -90,15 +84,19 @@ export const translations = {
     move_to: "Move to...",
     home_dir: "Home Directory",
     import_title: "Import Existing Files",
-    import_desc: "Bot API cannot scan history. To add existing files, enter their <strong>Message Link</strong> or <strong>ID</strong>.",
-    import_desc_2: "Tip: Right click a message in Telegram &gt; Copy Message Link.",
+    import_desc:
+      "Bot API cannot scan history. To add existing files, enter their <strong>Message Link</strong> or <strong>ID</strong>.",
+    import_desc_2:
+      "Tip: Right click a message in Telegram &gt; Copy Message Link.",
     import_input_label: "Message Link(s) or ID(s)",
-    import_input_info: "Separate multiple IDs with commas. Use '100-110' for ranges.",
+    import_input_info:
+      "Separate multiple IDs with commas. Use '100-110' for ranges.",
     import_btn: "Import Files",
     upload_success_title: "Upload Successful",
     upload_success_multi_title: "Uploads Successful",
     done: "Done",
-    protected_link: "<strong>Protected:</strong> These links proxy traffic through your Worker.",
+    protected_link:
+      "<strong>Protected:</strong> These links proxy traffic through your Worker.",
     copy_link: "Copy Link",
     preview: "Preview",
     download: "Download",
@@ -117,7 +115,8 @@ export const translations = {
     chat_id: "Chat ID",
     info_chat_id: "Channel ID where files are stored",
     worker_url: "Worker URL",
-    info_worker_url: "URL of your Cloudflare Worker. Use '/api' if served from same domain.",
+    info_worker_url:
+      "URL of your Cloudflare Worker. Use '/api' if served from same domain.",
     test_conn: "Test",
     save_sync: "Save & Sync",
     conn_success: "Connected successfully!",
@@ -133,16 +132,45 @@ export const translations = {
     upload_failed: "Upload failed.",
     some_uploads_failed: "Some uploads failed.",
     search_failed: "Search failed.",
-    fetch_failed: "Failed to fetch files. Ensure Worker is deployed and configured.",
-    msg_older_than_48h: "This message is older than 48 hours and must be deleted manually: ",
+    fetch_failed:
+      "Failed to fetch files. Ensure Worker is deployed and configured.",
+    msg_older_than_48h:
+      "This message is older than 48 hours and must be deleted manually: ",
     skipped_large_files: "Skipped __count__ files larger than 50MB.",
     chunks: "chunks",
     chunks_detail: "Chunks",
-    slicing_message: "Auto-sliced large files: __msg__"
+    slicing_message: "Auto-sliced large files: __msg__",
+    downloading: "Downloading",
+    progress: "Progress",
+    download_complete: "Download complete!",
+    upload: "Upload",
+    download_list_title: "Active Downloads",
+    download_list_empty: "No active downloads.",
+    download_list_button: "Downloads",
+    download_aborted: "Download cancelled.",
+    download_error: "Download failed.",
+    cancel_download: "Cancel Download",
+    clear_completed: "Clear Completed",
+    clear_all: "Clear All",
+    downloads: "Downloads",
+    download_cancelled: "Download cancelled.",
+    copy: "Copy",
+    copied: "Copied",
+    upload_queue: "Upload Queue",
+    upload_queue_empty: "No files in queue.",
+    upload_queue_button: "Upload Queue",
+    upload_queue_button_info: "Upload files in queue.",
+    pending_files: "Pending Files",
+    processing: "Processing",
+    loading_preview: "Loading preview...",
   },
   zh: {
     app_title: "TeleCloud",
     app_subtitle: "持久化云存储 (CF Worker)",
+    theme: "主题",
+    theme_light: "浅色模式",
+    theme_dark: "深色模式",
+    theme_system: "跟随系统",
     toggle_theme: "切换主题",
     settings: "设置",
     refresh: "刷新",
@@ -179,7 +207,8 @@ export const translations = {
     move_to: "移动到...",
     home_dir: "根目录",
     import_title: "导入现有文件",
-    import_desc: "Bot API 无法扫描历史记录。要添加现有文件，请输入<strong>消息链接</strong>或<strong>ID</strong>。",
+    import_desc:
+      "Bot API 无法扫描历史记录。要添加现有文件，请输入<strong>消息链接</strong>或<strong>ID</strong>。",
     import_desc_2: "提示：在Telegram中右键点击一条消息 &gt; 复制消息链接。",
     import_input_label: "消息链接或 ID",
     import_input_info: "使用逗号分隔多个 ID。使用“100-110”表示范围。",
@@ -206,7 +235,8 @@ export const translations = {
     chat_id: "聊天 ID",
     info_chat_id: "文件存储的频道ID",
     worker_url: "Worker URL",
-    info_worker_url: "这是您的 Cloudflare Worker 的 URL。如果从同一域名提供，请使用 '/api'。",
+    info_worker_url:
+      "这是您的 Cloudflare Worker 的 URL。如果从同一域名提供，请使用 '/api'。",
     test_conn: "测试",
     save_sync: "保存并同步",
     conn_success: "连接成功！",
@@ -227,13 +257,50 @@ export const translations = {
     skipped_large_files: "已跳过 __count__ 个大于 50MB 的文件。",
     chunks: "分块",
     chunks_detail: "分块详情",
-    slicing_message: "自动切割大文件: __msg__"
-  }
+    slicing_message: "自动切割大文件: __msg__",
+    downloading: "下载中",
+    progress: "进度",
+    download_complete: "下载完成！",
+    upload: "上传",
+    download_list_title: "下载列表",
+    download_list_empty: "没有正在进行的下载。",
+    download_list_button: "下载列表",
+    download_aborted: "下载已取消。",
+    download_error: "下载失败。",
+    cancel_download: "取消下载",
+    clear_completed: "清除已完成",
+    clear_all: "清除所有",
+    downloads: "下载列表",
+    download_cancelled: "下载已取消。",
+    copy: "复制",
+    copied: "已复制",
+    upload_queue: "上传队列",
+    upload_queue_empty: "没有文件在队列中。",
+    upload_queue_button: "上传队列",
+    upload_queue_button_info: "上传队列中的文件。",
+    pending_files: "待上传文件",
+    processing: "处理中",
+    loading_preview: "加载预览...",
+  },
 };
 
 export type Language = keyof typeof translations;
+export const DEFAULT_LANG: Language = "en";
 
-export const t = (lang: string | undefined, key: keyof typeof translations['en']) => {
-  const currentLang = (lang && translations[lang as Language]) ? lang as Language : 'en';
+export const t = (
+  lang: string | undefined,
+  key: keyof (typeof translations)["en"],
+) => {
+  const currentLang =
+    lang && translations[lang as Language] ? (lang as Language) : DEFAULT_LANG;
   return ReactHtmlParser(translations[currentLang][key]) || key;
+};
+
+export const stringToNumberHash = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // 32-bit
+  }
+  return Math.abs(hash);
 };

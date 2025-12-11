@@ -9,9 +9,11 @@ export interface TelegramDocument {
   file_id: string;
   file_unique_id: string;
   file_name?: string;
+  original_name?: string;
   mime_type?: string;
   file_size?: number;
-  is_sliced ?: boolean;
+  thumbnail_file_id?: string;
+  is_sliced?: boolean;
   chunks?: any;
   parent_id?: number | null; // ID of the folder from DB
   is_folder?: boolean;
@@ -48,6 +50,26 @@ export interface TelegramUpdate {
   channel_post?: TelegramMessage;
 }
 
+export interface DownloadChunkProgress {
+  name: string;
+  progress: number;
+  status: "pending" | "downloading" | "completed" | "error" | "aborted";
+  errorMsg?: string;
+}
+
+export interface DownloadTask {
+  id: string; // Unique ID for the download task
+  fileName: string;
+  fileSize: number;
+  totalChunks: number;
+  chunkProgresses: DownloadChunkProgress[];
+  overallProgress: number;
+  status: "pending" | "downloading" | "completed" | "error" | "aborted";
+  errorMsg?: string;
+  startTime: number;
+  endTime?: number;
+}
+
 export interface AppConfig {
   botToken: string;
   chatId: string;
@@ -64,22 +86,31 @@ export interface WorkerResponse<T> {
 
 // Simple folder structure for Move Modal
 export interface FolderItem {
-    id: number;
-    name: string;
-    parent_id: number | null;
+  id: number;
+  name: string;
+  parent_id: number | null;
 }
 
 export interface UploadFileItem {
   file: File;
   sliceGroupId?: string;
+  originalMimeType?: string;
 }
 
-export type SortField = 'name' | 'date' | 'size';
-export type SortOrder = 'asc' | 'desc';
+export type SortField = "name" | "date" | "size";
+export type SortOrder = "asc" | "desc";
 
 export interface SortConfig {
-    field: SortField;
-    order: SortOrder;
+  field: SortField;
+  order: SortOrder;
 }
 
 export const DEFAULT_WORKER_URL = "/api"; // Assumes frontend and backend are on same domain
+
+export interface FileUploadStatus {
+  id: string; // Unique ID for the upload task
+  name: string;
+  progress: number;
+  status: "pending" | "uploading" | "completed" | "error" | "aborted";
+  errorMsg?: string;
+}
