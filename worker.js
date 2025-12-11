@@ -833,12 +833,12 @@ async function saveMessageToDb(
 
 // Helper: Parse chunk filename to extract metadata
 function parseChunkFileName(fileName) {
-  const match = fileName.match(/^(.+?)\.part(\d+)of(\d+)$/);
+  const match = fileName.match(/\.part(\d+)of(\d+)/);
   if (!match) return null;
 
   return {
-    originalName: match[1],
-    index: parseInt(match[2], 10),
-    total: parseInt(match[3], 10),
+    originalName: fileName.replace(match[0], ""),
+    index: parseInt(match[1], 10),
+    total: parseInt(match[2], 10),
   };
 }

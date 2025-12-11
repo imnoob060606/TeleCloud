@@ -215,8 +215,7 @@ export const PendingFileItem: React.FC<PendingFileItemProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-slate-700 dark:text-slate-200 truncate">
-                      {file.name}.part{idx + 1}of{totalChunks}.
-                      {file.name.split(".").pop()}
+                      {file.name}.part{idx + 1}of{totalChunks}
                     </p>
                     <p className="text-slate-500 dark:text-slate-400">
                       {formatBytes(chunkSize)}

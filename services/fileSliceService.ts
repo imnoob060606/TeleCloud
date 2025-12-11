@@ -48,11 +48,11 @@ export const sliceFile = (file: File): UploadFileItem[] => {
     const blob = file.slice(start, end, file.type);
 
     // Generate chunk filename with metadata
-    // Example: "document.part1of3.pdf" for first chunk out of 3
-    const fileNameAndExtension = file.name.split(".");
-    const extension = fileNameAndExtension.pop();
-    const fileName = fileNameAndExtension.join(".");
-    const chunkFileName = `${fileName}${CHUNK_SUFFIX}${i + 1}of${totalChunks}.${extension}`;
+    // Example: "document.pdf.part1of3" for first chunk out of 3
+    // const fileNameAndExtension = file.name.split(".");
+    // const extension = fileNameAndExtension.pop();
+    // const fileName = fileNameAndExtension.join(".");
+    const chunkFileName = `${file.name}.${CHUNK_SUFFIX}${i + 1}of${totalChunks}`;
 
     // Create a new File object from the blob
     const chunkFile = new File([blob], chunkFileName, {
@@ -79,11 +79,11 @@ export const getSliceFileMetaData = (file: File): File[] => {
 
   for (let i = 0; i < totalChunks; i++) {
     // Generate chunk filename with metadata
-    // Example: "document.part1of3.pdf" for first chunk out of 3
-    const fileNameAndExtension = file.name.split(".");
-    const extension = fileNameAndExtension.pop();
-    const fileName = fileNameAndExtension.join(".");
-    const chunkFileName = `${fileName}${CHUNK_SUFFIX}${i + 1}of${totalChunks}.${extension}`;
+    // Example: "document.pdf.part1of3" for first chunk out of 3
+    // const fileNameAndExtension = file.name.split(".");
+    // const extension = fileNameAndExtension.pop();
+    // const fileName = fileNameAndExtension.join(".");
+    const chunkFileName = `${file.name}.${CHUNK_SUFFIX}${i + 1}of${totalChunks}`;
     const chunkFileSize = file.size - CHUNK_SIZE * (i + 1);
     chunks.push({
       name: chunkFileName,
@@ -117,13 +117,13 @@ export const getOriginalFileName = (slicedFileName: string): string => {
 export const parseChunkFileName = (
   fileName: string,
 ): { index: number; total: number; originalName: string } | null => {
-  const match = fileName.match(/^(.+?)\.part(\d+)of(\d+)$/);
+  const match = fileName.match(/\.part(\d+)of(\d+)/);
   if (!match) return null;
 
   return {
-    originalName: match[1],
-    index: parseInt(match[2], 10),
-    total: parseInt(match[3], 10),
+    originalName: fileName.replace(match[0], ""),
+    index: parseInt(match[1], 10),
+    total: parseInt(match[2], 10),
   };
 };
 
