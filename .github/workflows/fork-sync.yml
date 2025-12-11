@@ -30,8 +30,8 @@ jobs:
 
       - name: Hard reset to upstream
         run: |
-          git reset --hard upstream/main
+          git reset --hard upstream/master
 
       - name: Force push to origin
         run: |
-          git push origin main --force
+          git push origin master --force
