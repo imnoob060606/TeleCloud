@@ -75,6 +75,7 @@ import { UploadQueue } from "../UploadQueue";
 import { PendingFileItem } from "../PendingFileItem";
 import { FilterMenu } from "../FilterMenu";
 import { SortMenu } from "../SortMenu";
+import { Footer } from "../Footer";
 
 // Breadcrumb item type
 interface Breadcrumb {
@@ -1909,6 +1910,7 @@ export function FileManager() {
         lang={lang}
         networkSpeed={networkSpeed}
       />
+      <Footer lang={lang} />
     </div>
   );
 }
