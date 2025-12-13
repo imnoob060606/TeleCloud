@@ -1,6 +1,7 @@
 import React from "react";
 import { Filter, Check, Calendar } from "lucide-react";
 import { FilterType, TimeFilter } from "../types";
+import { t } from "../constants";
 
 interface FilterMenuProps {
   filterType: FilterType;
@@ -13,6 +14,7 @@ interface FilterMenuProps {
   setCustomEndDate: (date: string) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  lang: string;
   // Generic handler to close other menus (like Sort) if needed,
   // or just handle outside clicks in parent.
   // For simplicity, we just toggle ourselves here.
@@ -29,36 +31,37 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
   setCustomEndDate,
   isOpen,
   setIsOpen,
+  lang,
 }) => {
   const getTypeFilterLabel = (type: FilterType) => {
     switch (type) {
       case "all":
-        return "All Types";
+        return t(lang, "filter_type_all");
       case "photo":
-        return "Photos";
+        return t(lang, "filter_type_photo");
       case "video":
-        return "Videos";
+        return t(lang, "filter_type_video");
       case "document":
-        return "Documents";
+        return t(lang, "filter_type_document");
       case "audio":
-        return "Audio";
+        return t(lang, "filter_type_audio");
       case "folder":
-        return "Folders";
+        return t(lang, "filter_type_folder");
     }
   };
 
   const getTimeFilterLabel = (filter: TimeFilter) => {
     switch (filter) {
       case "all":
-        return "Any Time";
+        return t(lang, "filter_time_all");
       case "24h":
-        return "Last 24 Hours";
+        return t(lang, "filter_time_24h");
       case "7d":
-        return "Last 7 Days";
+        return t(lang, "filter_time_7d");
       case "30d":
-        return "Last 30 Days";
+        return t(lang, "filter_time_30d");
       case "custom":
-        return "Custom Range";
+        return t(lang, "filter_time_custom");
     }
   };
 
@@ -77,7 +80,9 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
       >
         <Filter className="w-4 h-4" />
         <span className="hidden min-[480px]:inline">
-          {filterType !== "all" ? getTypeFilterLabel(filterType) : "Filter"}
+          {filterType !== "all"
+            ? getTypeFilterLabel(filterType)
+            : t(lang, "filter_button_default")}
         </span>
         {(filterType !== "all" || timeFilter !== "all") && (
           <div className="w-2 h-2 rounded-full bg-telegram-500 absolute top-1 right-1 sm:top-0.5 sm:right-0.5"></div>
@@ -91,7 +96,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
         >
           {/* File Type Section */}
           <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50 dark:bg-slate-800/50">
-            File Type
+            {t(lang, "filter_section_fileType")}
           </div>
           <div className="grid grid-cols-2 gap-1 p-2">
             {(
@@ -122,7 +127,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
 
           {/* Time Section */}
           <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50 dark:bg-slate-800/50">
-            Time Range
+            {t(lang, "filter_section_timeRange")}
           </div>
           <div className="p-2 space-y-1">
             {(["all", "24h", "7d", "30d"] as TimeFilter[]).map((tf) => (
@@ -147,7 +152,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
                   : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
               }`}
             >
-              <span>Custom Range</span>
+              <span>{t(lang, "filter_time_custom")}</span>
               {timeFilter === "custom" && <Calendar className="w-4 h-4" />}
             </button>
 
@@ -155,7 +160,9 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
             {timeFilter === "custom" && (
               <div className="pt-2 pl-2 space-y-2 animate-in slide-in-from-top-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400 w-8">From</span>
+                  <span className="text-xs text-slate-400 w-8">
+                    {t(lang, "filter_custom_from")}
+                  </span>
                   <input
                     type="date"
                     value={customStartDate}
@@ -164,7 +171,9 @@ export const FilterMenu: React.FC<FilterMenuProps> = ({
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400 w-8">To</span>
+                  <span className="text-xs text-slate-400 w-8">
+                    {t(lang, "filter_custom_to")}
+                  </span>
                   <input
                     type="date"
                     value={customEndDate}

@@ -3,6 +3,9 @@ import ReactHtmlParser from "html-react-parser";
 
 export const TELEGRAM_API_BASE = "https://api.telegram.org";
 
+export const CONFIG_STORAGE_KEY = "telecloud_config";
+export const THEME_STORAGE_KEY = "telecloud_theme";
+
 export const CHUNK_SIZE = 20 * 1024 * 1024; // 20mb
 
 export const formatBytes = (bytes: number, decimals = 2) => {
@@ -135,7 +138,7 @@ export const translations = {
     fetch_failed:
       "Failed to fetch files. Ensure Worker is deployed and configured.",
     msg_older_than_48h:
-      "This message is older than 48 hours and must be deleted manually: ",
+      "This message is older than 48 hours and may be deleted manually: ",
     skipped_large_files: "Skipped __count__ files larger than 50MB.",
     chunks: "chunks",
     chunks_detail: "Chunks",
@@ -163,6 +166,35 @@ export const translations = {
     pending_files: "Pending Files",
     processing: "Processing",
     loading_preview: "Loading preview...",
+    filter_button_default: "Filter",
+    filter_button_active_dot: "Active Filter",
+    filter_section_fileType: "File Type",
+    filter_type_all: "All Types",
+    filter_type_photo: "Photos",
+    filter_type_video: "Videos",
+    filter_type_document: "Documents",
+    filter_type_audio: "Audio",
+    filter_type_folder: "Folders",
+    filter_section_timeRange: "Time Range",
+    filter_time_all: "Any Time",
+    filter_time_24h: "Last 24 Hours",
+    filter_time_7d: "Last 7 Days",
+    filter_time_30d: "Last 30 Days",
+    filter_time_custom: "Custom Range",
+    filter_custom_from: "From",
+    filter_custom_to: "To",
+    share_error_title: "Error",
+    share_error_missingParams: "Invalid share link: Missing parameters",
+    share_error_malformedData: "Invalid share link: Malformed data",
+    share_loading: "Loading shared file…",
+    share_file_label: "Shared File",
+    share_download_button: "Download",
+    share_footer_hostedVia: "Hosted via TeleCloud",
+    share_error_generic: "Something went wrong",
+    share_error_expired: "This share link has expired",
+    share_error_notFound: "File not found",
+    share_error_permissionDenied:
+      "You do not have permission to access this file",
   },
   zh: {
     app_title: "TeleCloud",
@@ -253,7 +285,7 @@ export const translations = {
     some_uploads_failed: "部分文件上传失败。",
     search_failed: "搜索失败。",
     fetch_failed: "获取文件失败。请确保 Worker 已部署并配置。",
-    msg_older_than_48h: "此消息已超过 48 小时，必须手动删除：",
+    msg_older_than_48h: "此消息已超过 48 小时，可以手动删除：",
     skipped_large_files: "已跳过 __count__ 个大于 50MB 的文件。",
     chunks: "分块",
     chunks_detail: "分块详情",
@@ -281,6 +313,34 @@ export const translations = {
     pending_files: "待上传文件",
     processing: "处理中",
     loading_preview: "加载预览...",
+    filter_button_default: "筛选",
+    filter_button_active_dot: "筛选",
+    filter_section_fileType: "文件类型",
+    filter_type_all: "所有类型",
+    filter_type_photo: "照片",
+    filter_type_video: "视频",
+    filter_type_document: "文档",
+    filter_type_audio: "音频",
+    filter_type_folder: "文件夹",
+    filter_section_timeRange: "时间范围",
+    filter_time_all: "任何时间",
+    filter_time_24h: "最近24小时",
+    filter_time_7d: "最近7天",
+    filter_time_30d: "最近30天",
+    filter_time_custom: "自定义范围",
+    filter_custom_from: "从",
+    filter_custom_to: "到",
+    share_error_title: "错误",
+    share_error_missingParams: "无效的分享链接：缺少参数",
+    share_error_malformedData: "无效的分享链接：数据格式错误",
+    share_loading: "正在加载分享文件…",
+    share_file_label: "已分享的文件",
+    share_download_button: "下载",
+    share_footer_hostedVia: "由 TeleCloud 提供",
+    share_error_generic: "发生未知错误",
+    share_error_expired: "该分享链接已失效",
+    share_error_notFound: "文件不存在",
+    share_error_permissionDenied: "你没有权限访问该文件",
   },
 };
 
