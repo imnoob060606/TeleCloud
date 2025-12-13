@@ -7,6 +7,7 @@ import {
   t,
   DEFAULT_LANG,
 } from "../../constants";
+import { Footer } from "../Footer";
 
 // Helper to decode the share payload
 // payload = base64(json({ w: workerUrl, f: fileId, n: fileName }))
@@ -152,6 +153,7 @@ export function SharePage() {
           </p>
         </div>
       </div>
+      <Footer lang={language} />
     </div>
   );
 }
