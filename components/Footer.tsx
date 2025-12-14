@@ -74,7 +74,7 @@ export function Footer({ lang }: { lang: string }) {
   return (
     <>
       <footer className="w-full mt-10 sticky top-full border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
           {/* Left: Copyright & License */}
           <div className="flex items-center gap-4">
             <a
@@ -91,9 +91,15 @@ export function Footer({ lang }: { lang: string }) {
                 aria-label="GitHub"
                 dangerouslySetInnerHTML={{ __html: siGithub.svg }}
               />
+              <span className="font-medium">GitHub</span>
             </a>
+            <div className="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
             <span>
-              &copy; {new Date().getFullYear()} Im-Not-God &middot;{" "}
+              With <span className="text-red-400">♥</span> by Im-Not-God
+            </span>
+            <div className="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
+            <span>
+              &copy; {new Date().getFullYear()} &middot;{" "}
               <a
                 href="https://github.com/Im-Not-God/TeleCloud/blob/master/LICENSE"
                 target="_blank"
