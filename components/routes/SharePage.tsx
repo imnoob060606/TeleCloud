@@ -124,8 +124,8 @@ export function SharePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-slate-900 p-4">
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-100 dark:border-slate-700">
+    <div className="overflow-auto flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-slate-900 p-4">
+      <div className="my-auto bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-100 dark:border-slate-700">
         <div className="w-20 h-20 bg-telegram-50 dark:bg-telegram-900/20 text-telegram-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <FileIcon className="w-10 h-10" />
         </div>
