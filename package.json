@@ -1,7 +1,7 @@
 {
   "name": "telecloud",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,6 +28,7 @@
     "react-router-dom": "^7.10.1",
     "react-syntax-highlighter": "^16.1.0",
     "remark-gfm": "^4.0.1",
+    "simple-icons": "^16.2.0",
     "telegram": "^2.26.22"
   },
   "devDependencies": {
