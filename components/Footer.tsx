@@ -34,7 +34,7 @@ export function Footer({ lang }: { lang: string }) {
     latestVersion.replace(/^v/, "") !== currentVersion.replace(/^v/, "");
 
   return (
-    <footer className="w-full py-6 mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+    <footer className="w-full mt-10 sticky top-full border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-4">
           <a

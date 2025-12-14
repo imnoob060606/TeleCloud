@@ -45,3 +45,15 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+footer {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* 如果手机之类的需要额外空间 */
+@media (pointer: coarse) {
+  footer {
+    padding-bottom: calc(2rem + max(3rem, env(safe-area-inset-bottom)));
+  }
+}
