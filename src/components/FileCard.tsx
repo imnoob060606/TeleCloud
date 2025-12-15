@@ -10,10 +10,10 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { TelegramMessage, AppConfig } from "../types";
-import { formatBytes, isFilePreviewable, t } from "../constants";
-import { getFileUrl, getPublicDownloadUrl } from "../services/telegramService";
-import { downloadAndReassembleChunksWithProgress } from "../services/fileReassemblyService";
+import { TelegramMessage, AppConfig } from "@/types";
+import { formatBytes, isFilePreviewable, t } from "@/constants";
+import { getFileUrl, getPublicDownloadUrl } from "@/services/telegramService";
+import { downloadAndReassembleChunksWithProgress } from "@/services/fileReassemblyService";
 import { Layers } from "lucide-react";
 
 interface FileCardProps {

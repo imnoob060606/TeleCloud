@@ -2,8 +2,8 @@
  * File Slicing Service
  * Handles automatic splitting of large files (>50MB) into smaller chunks
  */
-import { CHUNK_SIZE } from "../constants";
-import { UploadFileItem } from "../types";
+import { CHUNK_SIZE } from "@/constants";
+import { UploadFileItem } from "@/types";
 
 const CHUNK_SUFFIX = ".part";
 

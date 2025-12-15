@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CheckCircle, Copy, X, ShieldCheck, FileText } from "lucide-react";
-import { t } from "../constants";
-import { AppConfig } from "../types";
+import { t } from "@/constants";
+import { AppConfig } from "@/types";
 
 interface UploadedFile {
   url: string;

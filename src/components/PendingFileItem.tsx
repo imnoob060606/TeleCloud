@@ -8,7 +8,7 @@ import {
   Layers,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatBytes, isFilePreviewable, t, CHUNK_SIZE } from "../constants";
+import { formatBytes, isFilePreviewable, t, CHUNK_SIZE } from "@/constants";
 
 interface PendingFileItemProps {
   file: File;

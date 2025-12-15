@@ -9,8 +9,8 @@ import {
   ListFilter,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatBytes, t } from "../constants";
-import { AppConfig, DownloadTask } from "../types";
+import { formatBytes, t } from "@/constants";
+import { AppConfig, DownloadTask } from "@/types";
 
 interface DownloadListModalProps {
   isOpen: boolean;

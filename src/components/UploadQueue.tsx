@@ -13,8 +13,8 @@ import {
   CircleX,
   CircleAlert,
 } from "lucide-react";
-import { formatBytes, t, CHUNK_SIZE } from "../constants";
-import { FileUploadStatus } from "../types";
+import { formatBytes, t, CHUNK_SIZE } from "@/constants";
+import { FileUploadStatus } from "@/types";
 interface UploadQueueProps {
   pendingFiles: File[];
   activeUploads: FileUploadStatus[];
@@ -31,7 +31,6 @@ interface UploadQueueProps {
   networkSpeed: string;
 }
 
-// import { PendingFileItem } from './PendingFileItem';
 export const UploadQueue: React.FC<UploadQueueProps> = ({
   pendingFiles,
   activeUploads,
@@ -106,16 +105,6 @@ export const UploadQueue: React.FC<UploadQueueProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {/* Desktop: Quick Actions in Header when collapsed */}
-              {/* {!isOpen && pendingFiles.length > 0 && (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onUploadAll(); }}
-                                    className="hidden sm:flex px-3 py-1.5 bg-telegram-500 hover:bg-telegram-600 text-white text-xs font-medium rounded-lg items-center gap-1.5 transition-colors"
-                                >
-                                    <UploadCloud className="w-3 h-3" />
-                                    {t(lang, 'upload_all')}
-                                </button>
-                            )} */}
               <button className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                 {isOpen ? (
                   <ChevronDown className="w-5 h-5" />
@@ -241,61 +230,7 @@ export const UploadQueue: React.FC<UploadQueueProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Pending Files */}
-            {/* {pendingFiles.length > 0 && (
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400 px-1 mt-2">
-                                    <span>{t(lang, 'pending_files')} ({pendingFiles.length})</span>
-                                    <button onClick={onClearPending} className="text-red-500 hover:underline flex items-center gap-1">
-                                        <Trash2 className="w-3 h-3" /> {t(lang, 'clear_all')}
-                                    </button>
-                                </div>
-                                {pendingFiles.map((file, i) => (
-                                    <PendingFileItem
-                                        key={stringToNumberHash(`${file.name}-${file.size}-${i}`)}
-                                        file={file}
-                                        onRemove={() => onRemovePending(i)}
-                                        onUpload={() => onUploadFile(file)}
-                                        onPreview={onPreview}
-                                        lang={lang}
-                                        isMenuOpen={activeMenuId === stringToNumberHash(`${file.name}-${file.size}-${i}`)}
-                                        onMenuToggle={() => setActiveMenuId(prev => prev === stringToNumberHash(`${file.name}-${file.size}-${i}`) ? null : stringToNumberHash(`${file.name}-${file.size}-${i}`))}
-                                    />
-                                ))}
-                            </div>
-                        )} */}
           </div>
-
-          {/* Footer Actions */}
-          {/* <div className="p-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex gap-3">
-                        <label className="flex-1 cursor-pointer">
-                            <input
-                                type="file"
-                                multiple
-                                className="sr-only"
-                                onChange={(e) => {
-                                    if (e.target.files) {
-                                        onAddMoreFiles(Array.from(e.target.files));
-                                        e.target.value = '';
-                                    }
-                                }}
-                            />
-                            <div className="w-full py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all flex items-center justify-center gap-2">
-                                <Plus className="w-4 h-4" />
-                                {t(lang, 'add_more')}
-                            </div>
-                        </label>
-                        {pendingFiles.length > 0 && (
-                            <button
-                                onClick={onUploadAll}
-                                className="flex-[2] py-2.5 bg-telegram-500 hover:bg-telegram-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-telegram-500/20 transition-all flex items-center justify-center gap-2"
-                            >
-                                <UploadCloud className="w-4 h-4" />
-                                {t(lang, 'upload_all')}
-                            </button>
-                        )}
-                    </div> */}
         </div>
       </div>
     </div>

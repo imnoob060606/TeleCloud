@@ -12,7 +12,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { isFilePreviewable, t } from "../constants";
+import { isFilePreviewable, t } from "@/constants";
 import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   vscDarkPlus,
@@ -22,10 +22,10 @@ import {
 import languageMap from "language-map";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "../github-markdown-modified.css"; // 你自定义的覆盖规则
-import { AppConfig } from "../types";
-import { downloadAndReassembleChunksWithProgress } from "../services/fileReassemblyService";
-import { getFileUrl } from "../services/telegramService";
+import "@/github-markdown-modified.css"; // 你自定义的覆盖规则
+import { AppConfig } from "@/types";
+import { downloadAndReassembleChunksWithProgress } from "@/services/fileReassemblyService";
+import { getFileUrl } from "@/services/telegramService";
 
 interface PreviewModalProps {
   isOpen: boolean;

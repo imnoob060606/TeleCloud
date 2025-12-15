@@ -10,7 +10,7 @@ import {
 import { siGithub } from "simple-icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "../github-markdown-modified.css";
+import "@/github-markdown-modified.css";
 
 declare const __APP_VERSION__: string;
 

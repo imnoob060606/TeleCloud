@@ -1,7 +1,7 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import FileManager from "./components/routes/FileManager";
-import { SharePage } from "./components/routes/SharePage";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import FileManager from "@/components/routes/FileManager";
+import SharePage from "@/components/routes/SharePage";
 
 function App() {
   return (

@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { Download, File as FileIcon, Loader2, AlertCircle } from "lucide-react";
 import {
   CONFIG_STORAGE_KEY,
   THEME_STORAGE_KEY,
   t,
   DEFAULT_LANG,
-} from "../../constants";
-import { Footer } from "../Footer";
+} from "@/constants";
+import { Footer } from "@/components/Footer";
 
 // Helper to decode the share payload
 // payload = base64(json({ w: workerUrl, f: fileId, n: fileName }))
@@ -22,7 +22,7 @@ const decodeShare = (
   }
 };
 
-export function SharePage() {
+export default function SharePage() {
   const [searchParams] = useSearchParams();
   const shareParam = searchParams.get("s");
 

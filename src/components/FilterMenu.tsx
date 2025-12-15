@@ -1,7 +1,7 @@
 import React from "react";
 import { Filter, Check, Calendar } from "lucide-react";
-import { FilterType, TimeFilter } from "../types";
-import { t } from "../constants";
+import { FilterType, TimeFilter } from "@/types";
+import { t } from "@/constants";
 
 interface FilterMenuProps {
   filterType: FilterType;

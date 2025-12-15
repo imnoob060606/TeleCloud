@@ -3,7 +3,7 @@
  * Handles reconstruction of sliced files from chunks
  */
 
-import { parseChunkFileName } from "./fileSliceService";
+import { parseChunkFileName } from "@/services/fileSliceService";
 
 /**
  * Interface for a file chunk in storage
