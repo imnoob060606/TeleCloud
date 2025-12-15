@@ -6,9 +6,9 @@ import {
   Link as LinkIcon,
   CircleAlert,
 } from "lucide-react";
-import { AppConfig, TelegramUpdate } from "../types";
-import { importFile } from "../services/telegramService";
-import { t } from "../constants";
+import { AppConfig, TelegramUpdate } from "@/types";
+import { importFile } from "@/services/telegramService";
+import { t } from "@/constants";
 
 interface ImportModalProps {
   isOpen: boolean;

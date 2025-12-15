@@ -8,8 +8,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatBytes, t } from "../constants";
-import { DownloadTask } from "../types"; // Import DownloadTask
+import { formatBytes, t } from "@/constants";
+import { DownloadTask } from "@/types"; // Import DownloadTask
 
 interface DownloadModalProps {
   isOpen: boolean;

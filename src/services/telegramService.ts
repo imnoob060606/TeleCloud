@@ -5,7 +5,7 @@ import {
   WorkerResponse,
   FolderItem,
   SortConfig,
-} from "../types";
+} from "@/types";
 
 // Helper to call our Worker API
 const callWorker = async <T>(

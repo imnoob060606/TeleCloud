@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowUpNarrowWide, ArrowDownNarrowWide, Check } from "lucide-react";
-import { SortConfig, SortField, SortOrder } from "../types";
-import { t } from "../constants";
+import { SortConfig, SortField, SortOrder } from "@/types";
+import { t } from "@/constants";
 
 interface SortMenuProps {
   sortConfig: SortConfig;

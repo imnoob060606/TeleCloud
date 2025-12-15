@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import {
   Settings,
   UploadCloud,
@@ -39,7 +39,7 @@ import {
   FileUploadStatus,
   FilterType,
   TimeFilter,
-} from "../../types";
+} from "@/types";
 import {
   CONFIG_STORAGE_KEY,
   THEME_STORAGE_KEY,
@@ -49,16 +49,16 @@ import {
   DEFAULT_LANG,
   translations,
   stringToNumberHash,
-} from "../../constants";
-import { SettingsModal } from "../SettingsModal";
-import { UploadSuccessModal } from "../UploadSuccessModal";
-import { ImportModal } from "../ImportModal";
-import { DeleteConfirmModal } from "../DeleteConfirmModal";
-import { CreateFolderModal } from "../CreateFolderModal";
-import { MoveFileModal } from "../MoveFileModal";
-import { PreviewModal } from "../PreviewModal";
-import { DownloadModal } from "../DownloadModal";
-import { DownloadListModal } from "../DownloadListModal";
+} from "@/constants";
+import { SettingsModal } from "@/components/SettingsModal";
+import { UploadSuccessModal } from "@/components/UploadSuccessModal";
+import { ImportModal } from "@/components/ImportModal";
+import { DeleteConfirmModal } from "@/components/DeleteConfirmModal";
+import { CreateFolderModal } from "@/components/CreateFolderModal";
+import { MoveFileModal } from "@/components/MoveFileModal";
+import { PreviewModal } from "@/components/PreviewModal";
+import { DownloadModal } from "@/components/DownloadModal";
+import { DownloadListModal } from "@/components/DownloadListModal";
 import {
   getStoredFiles,
   uploadDocument,
@@ -67,15 +67,15 @@ import {
   createFolder,
   moveFile,
   searchFiles,
-} from "../../services/telegramService";
-import { processFilesWithSlicing } from "../../services/fileSliceService";
-import { FileCard } from "../FileCard";
+} from "@/services/telegramService";
+import { processFilesWithSlicing } from "@/services/fileSliceService";
+import { FileCard } from "@/components/FileCard";
 
-import { UploadQueue } from "../UploadQueue";
-import { PendingFileItem } from "../PendingFileItem";
-import { FilterMenu } from "../FilterMenu";
-import { SortMenu } from "../SortMenu";
-import { Footer } from "../Footer";
+import { UploadQueue } from "@/components/UploadQueue";
+import { PendingFileItem } from "@/components/PendingFileItem";
+import { FilterMenu } from "@/components/FilterMenu";
+import { SortMenu } from "@/components/SortMenu";
+import { Footer } from "@/components/Footer";
 
 // Breadcrumb item type
 interface Breadcrumb {
