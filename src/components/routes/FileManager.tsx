@@ -48,7 +48,9 @@ import { DeleteConfirmModal } from "@/components/DeleteConfirmModal";
 import { ShareModal } from "@/components/ShareModal";
 import { CreateFolderModal } from "@/components/CreateFolderModal";
 import { MoveFileModal } from "@/components/MoveFileModal";
+import { ChannelSidebar } from "@/components/ChannelSidebar";
 import { Header } from "@/components/Header";
+import { AddChannelModal } from "@/components/AddChannelModal";
 import { PreviewModal } from "@/components/PreviewModal";
 import { DownloadModal } from "@/components/DownloadModal";
 import { DownloadListModal } from "@/components/DownloadListModal";
@@ -82,7 +84,7 @@ export function FileManager() {
   // Load Config
   const [config, setConfig] = useState<AppConfig>(() => {
     const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
-    return saved
+    let parsedConfig = saved
       ? JSON.parse(saved)
       : {
           botToken: "",
@@ -92,6 +94,22 @@ export function FileManager() {
             (navigator.languages?.[0] || navigator.language).split("-")[0] ||
             DEFAULT_LANG,
         };
+
+    // Migration: If chatId exists but channels is empty, add it as default channel
+    if (
+      parsedConfig.chatId &&
+      (!parsedConfig.channels || parsedConfig.channels.length === 0)
+    ) {
+      parsedConfig.channels = [
+        {
+          id: "default",
+          name: "Main Channel",
+          chatId: parsedConfig.chatId,
+        },
+      ];
+    }
+
+    return parsedConfig;
   });
 
   const lang = config.language;
@@ -326,6 +344,8 @@ export function FileManager() {
   // Modal states
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAddChannelOpen, setIsAddChannelOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [shareFile, setShareFile] = useState<{
     id: string;
     name: string;
@@ -534,6 +554,7 @@ export function FileManager() {
     setNotification(null);
 
     try {
+      console.log("Fetching files...");
       const dbFiles = await getStoredFiles(config, currentFolderId, sortConfig);
       setFiles(dbFiles);
     } catch (err: any) {
@@ -976,6 +997,27 @@ export function FileManager() {
     setIsShareModalOpen(true);
   };
 
+  const handleSelectChannel = (channelId: string) => {
+    setConfig((prev) => ({ ...prev, chatId: channelId }));
+    // Should we navigate to root? Maybe.
+    // fetchFiles will trigger automatically via config/chatId dependency on `fetchFiles`?
+    // Wait, `fetchFiles` depends on `config.chatId`.
+    // Also need to reset folder to root.
+    navigate("/");
+    // Breadcrumbs reset? navigate("/") handles that usually? No, handleNavigate does.
+    // But navigate("/") is just RR.
+    // We should manually reset breadcrumbs.
+    setBreadcrumbs([{ id: null, name: t(lang, "home") as string }]);
+  };
+
+  const handleAddChannel = (name: string, chatId: string) => {
+    const newChannel = { id: crypto.randomUUID(), name, chatId };
+    setConfig((prev) => ({
+      ...prev,
+      channels: [...(prev.channels || []), newChannel],
+    }));
+  };
+
   const handleMoveConfirm = async (targetParentId: number | null) => {
     if (!fileToMove) return;
     try {
@@ -1028,6 +1070,16 @@ export function FileManager() {
         setIsSettingsOpen={setIsSettingsOpen}
       />
       <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <ChannelSidebar
+          config={config}
+          lang={lang}
+          activeChatId={config.chatId}
+          onSelectChannel={handleSelectChannel}
+          onAddChannel={() => setIsAddChannelOpen(true)}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
         <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {/* Main Content */}
@@ -1540,6 +1592,13 @@ export function FileManager() {
         fileId={fileToMove?.id || ""}
         currentParentId={fileToMove?.parentId || null}
         onMove={handleMoveConfirm}
+      />
+
+      <AddChannelModal
+        isOpen={isAddChannelOpen}
+        onClose={() => setIsAddChannelOpen(false)}
+        onAdd={handleAddChannel}
+        lang={lang}
       />
 
       <ShareModal
