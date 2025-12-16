@@ -34,6 +34,20 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: true, // 删除 console
+          drop_debugger: true, // 删除 debugger
+        },
+        mangle: {
+          toplevel: true, // 混淆顶级作用域
+          safari10: true, // Safari 10 兼容
+        },
+        format: {
+          comments: false, // 删除注释
+        },
+      },
       rollupOptions: {
         output: {
           manualChunks: {

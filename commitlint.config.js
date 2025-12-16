@@ -18,6 +18,7 @@ export default {
         "perf",
         "revert",
         "vercel",
+        "build",
       ],
     ],
     // type 不允为空
