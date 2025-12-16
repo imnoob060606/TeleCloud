@@ -6,6 +6,7 @@ import {
   THEME_STORAGE_KEY,
   t,
   DEFAULT_LANG,
+  sha256Base64,
 } from "@/constants";
 import { Footer } from "@/components/Footer";
 
@@ -13,10 +14,18 @@ import { Footer } from "@/components/Footer";
 // payload = base64(json({ w: workerUrl, f: fileId, n: fileName }))
 const decodeShare = (
   shareStr: string,
-): { w: string; f: string; n: string } | null => {
+): { w: string; f: string; n: string; ph?: string } | null => {
   try {
-    const json = atob(shareStr);
-    return JSON.parse(json);
+    const b64 = shareStr.replace(/-/g, "+").replace(/_/g, "/");
+    // 补充填充
+    const restoredBase64 = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+    const payload = JSON.parse(atob(restoredBase64)) as string[];
+    return {
+      w: payload[0],
+      f: payload[1],
+      n: payload[2],
+      ph: payload[3] || undefined,
+    };
   } catch (e) {
     return null;
   }
@@ -59,6 +68,10 @@ export default function SharePage() {
     document.documentElement.lang = language;
   }, [language]);
 
+  const [password, setPassword] = useState("");
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
   const result = useMemo(() => {
     if (!shareParam) {
       return { error: "Invalid share link: Missing parameters" };
@@ -69,29 +82,7 @@ export default function SharePage() {
       return { error: "Invalid share link: Malformed data" };
     }
 
-    // Construct download URL directly
-    // Logic similar to getFileUrl but we use the decoded worker URL
-    const baseUrl = decoded.w.replace(/\/$/, "");
-    const workerOrigin = baseUrl.startsWith("http")
-      ? baseUrl
-      : `${window.location.origin}${baseUrl}`; // Fallback if regular path (but usually it's absolute)
-
-    // Note: This assumes public access or that the worker handles the token/auth via some other means
-    // OR this page is just a "Pre-download" page for the user who HAS the app open?
-    // If this is for "others", they might not have the auth token.
-    // The user said "share to others", assuming public link capability or masked proxy.
-    // Telegram files usually require the bot token to fetch.
-    // Our worker implementation usually proxies with the bot token stored in D1 or passed in headers.
-    // If we want a PUBLIC share, the worker needs a public endpoint.
-    // Assuming for now we just render the download button pointing to the PROXY which might require auth?
-    // Let's assume the "link" endpoint in worker handles public access or we just provide the UI.
-
-    // Actually, looking at `getPublicDownloadUrl`:
-    // It encodes `w`, `f`, `n`.
-    // The user wants `/share`.
-    // Let's just create a download link.
-
-    const downloadUrl = `${workerOrigin}/fp?file_id=${decoded.f}&file_name=${encodeURIComponent(decoded.n)}&d=1`;
+    const downloadUrl = `${decoded.w.replace(/\/$/, "")}/fp?file_id=${decoded.f}&file_name=${encodeURIComponent(decoded.n)}&d=1`;
 
     return {
       fileInfo: {
@@ -99,9 +90,24 @@ export default function SharePage() {
         fileId: decoded.f,
         fileName: decoded.n,
         downloadUrl,
+        passwordHash: decoded.ph,
       },
     };
   }, [shareParam]);
+
+  const handleUnlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!result.fileInfo?.passwordHash) return;
+
+    let hash = await sha256Base64(password + result.fileInfo.fileId);
+
+    if (hash === result.fileInfo.passwordHash) {
+      setIsUnlocked(true);
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+    }
+  };
 
   if (result.error) {
     return (
@@ -119,6 +125,52 @@ export default function SharePage() {
     return (
       <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-900">
         <Loader2 className="w-8 h-8 text-telegram-500 animate-spin" />
+      </div>
+    );
+  }
+
+  // Password Lock Screen
+  if (result.fileInfo.passwordHash && !isUnlocked) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-sm w-full border border-slate-100 dark:border-slate-700">
+          <div className="flex justify-center mb-6">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-full text-red-500">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+          </div>
+          <h2 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">
+            Password Protected
+          </h2>
+          <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">
+            This file is protected by a password.
+          </p>
+
+          <form onSubmit={handleUnlock} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                placeholder="Enter Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full px-4 py-3 rounded-xl border ${passwordError ? "border-red-500 focus:ring-red-200" : "border-slate-200 dark:border-slate-600 focus:ring-telegram-100"} bg-slate-50 dark:bg-slate-700 outline-none focus:ring-2 transition-all dark:text-white`}
+                autoFocus
+              />
+              {passwordError && (
+                <p className="text-red-500 text-xs mt-1 ml-1">
+                  Incorrect password
+                </p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-slate-900 dark:bg-slate-600 text-white rounded-xl font-medium hover:bg-slate-800 dark:hover:bg-slate-500 transition-colors"
+            >
+              Unlock
+            </button>
+          </form>
+        </div>
+        <Footer lang={language} />
       </div>
     );
   }

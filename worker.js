@@ -693,7 +693,9 @@ async function handleDelete(request, db, token) {
     } else if (item.slice_group_id) {
       // This is a sliced file - delete all chunks in the group
       const allChunks = await db
-        .prepare("SELECT id, message_id FROM files WHERE slice_group_id = ?")
+        .prepare(
+          "SELECT id, message_id, is_folder, slice_group_id FROM files WHERE slice_group_id = ?",
+        )
         .bind(item.slice_group_id)
         .all();
       itemsToDelete = allChunks.results || [item];
@@ -702,21 +704,23 @@ async function handleDelete(request, db, token) {
     // Delete from Telegram and database
     let failedDeletions = [];
     for (const fileItem of itemsToDelete) {
-      const tgRes = await fetch(
-        `https://api.telegram.org/bot${token}/deleteMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: HEADER_CHAT_ID,
-            message_id: fileItem.message_id,
-          }),
-        },
-      );
-      const data = await tgRes.json();
+      if (!fileItem.is_folder) {
+        const tgRes = await fetch(
+          `https://api.telegram.org/bot${token}/deleteMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: HEADER_CHAT_ID,
+              message_id: fileItem.message_id,
+            }),
+          },
+        );
+        const data = await tgRes.json();
 
-      if (!data.ok) {
-        failedDeletions.push(fileItem.message_id);
+        if (!data.ok) {
+          failedDeletions.push(fileItem.message_id);
+        }
       }
 
       await db

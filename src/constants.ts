@@ -124,6 +124,7 @@ export const translations = {
     save_sync: "Save & Sync",
     conn_success: "Connected successfully!",
     conn_failed: "Connection failed.",
+    channels: "Channels",
     language: "Language",
     files_uploaded: "File(s) Uploaded",
     no_folders: "No other folders created",
@@ -195,6 +196,14 @@ export const translations = {
     share_error_notFound: "File not found",
     share_error_permissionDenied:
       "You do not have permission to access this file",
+    enter_password_share:
+      "Enter a password for this share link (leave empty for no password):",
+    link_copied_password: "Protected link copied to clipboard!",
+    share_button: "Share",
+    add_channel: "Add Channel",
+    channel_name: "Channel Name",
+    add: "Add",
+    sidebar_title: "Channel List",
   },
   zh: {
     app_title: "TeleCloud",
@@ -273,6 +282,7 @@ export const translations = {
     save_sync: "保存并同步",
     conn_success: "连接成功！",
     conn_failed: "连接失败。",
+    channels: "频道列表",
     language: "语言",
     files_uploaded: "个文件已上传",
     no_folders: "暂无其他文件夹",
@@ -341,6 +351,10 @@ export const translations = {
     share_error_expired: "该分享链接已失效",
     share_error_notFound: "文件不存在",
     share_error_permissionDenied: "你没有权限访问该文件",
+    enter_password_share: "请输入分享链接的密码（留空则不设密码）：",
+    link_copied_password: "受保护的链接已复制到剪贴板！",
+    share_button: "分享",
+    sidebar_title: "频道列表",
   },
 };
 
@@ -363,4 +377,10 @@ export const stringToNumberHash = (str: string): number => {
     hash |= 0; // 32-bit
   }
   return Math.abs(hash);
+};
+
+export const sha256Base64 = async (str: string) => {
+  const data = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return btoa(String.fromCharCode(...new Uint8Array(hash)));
 };

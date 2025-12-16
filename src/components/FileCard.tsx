@@ -8,6 +8,7 @@ import {
   MoveRight,
   Eye,
   MoreVertical,
+  Share2,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { TelegramMessage, AppConfig } from "@/types";
@@ -55,6 +56,7 @@ interface FileCardProps {
     progress: number,
     isDownloading: boolean,
   ) => void;
+  onPasswordShare?: (fileId: string, fileName: string) => void;
 }
 
 export const FileCard: React.FC<FileCardProps> = ({
@@ -71,6 +73,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   onDownloadStart,
   onChunkProgress,
   onOverallProgress,
+  onPasswordShare,
 }) => {
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -285,7 +288,7 @@ export const FileCard: React.FC<FileCardProps> = ({
     setIsCopying(true);
     try {
       if (!fileId) throw new Error("Missing file ID");
-      const url = getPublicDownloadUrl(config, fileId, fileName);
+      const url = getFileUrl(config, fileId, fileName);
       if (url) {
         await navigator.clipboard.writeText(url);
         setCopied(true);
@@ -299,6 +302,16 @@ export const FileCard: React.FC<FileCardProps> = ({
       setIsCopying(false);
     } finally {
       setIsCopying(false);
+    }
+  };
+
+  const handleSharePassword = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onMenuToggle();
+    if (isFolder) return;
+
+    if (onPasswordShare && fileId) {
+      onPasswordShare(fileId, fileName);
     }
   };
 
@@ -484,6 +497,13 @@ export const FileCard: React.FC<FileCardProps> = ({
                     <LinkIcon className="w-4 h-4 text-slate-400" />
                   )}
                   {t(lang, "copy_link")}
+                </button>
+                <button
+                  onClick={handleSharePassword}
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3"
+                >
+                  <Share2 className="w-4 h-4 text-slate-400" />
+                  {t(lang, "share_button") || "Share"}
                 </button>
                 <button
                   onClick={handleDownload}
