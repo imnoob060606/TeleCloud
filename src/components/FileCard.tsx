@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { TelegramMessage, AppConfig } from "@/types";
-import { formatBytes, isFilePreviewable, t } from "@/constants";
+import { formatBytes, isFilePreviewable, t, Language } from "@/constants";
 import { getFileUrl, getPublicDownloadUrl } from "@/services/telegramService";
 import { downloadAndReassembleChunksWithProgress } from "@/services/fileReassemblyService";
 import { Layers } from "lucide-react";
@@ -20,6 +20,7 @@ import { Layers } from "lucide-react";
 interface FileCardProps {
   message: TelegramMessage;
   config: AppConfig;
+  lang: Language;
   onDeleteClick: (fileId: string, fileName: string) => void;
   onMoveClick: (fileId: string, currentParentId: number | null) => void;
   onNavigate: (folderId: number, folderName: string) => void;
@@ -62,6 +63,7 @@ interface FileCardProps {
 export const FileCard: React.FC<FileCardProps> = ({
   message,
   config,
+  lang,
   onDeleteClick,
   onMoveClick,
   onNavigate,
@@ -96,7 +98,6 @@ export const FileCard: React.FC<FileCardProps> = ({
   const totalChunks = doc?.chunks?.length;
 
   const actionId = fileId || uniqueId;
-  const lang = config?.language;
 
   // Updated to include text types
   const isPreviewable =

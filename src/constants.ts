@@ -5,6 +5,7 @@ export const TELEGRAM_API_BASE = "https://api.telegram.org";
 
 export const CONFIG_STORAGE_KEY = "telecloud_config";
 export const THEME_STORAGE_KEY = "telecloud_theme";
+export const LANGUAGE_STORAGE_KEY = "telecloud_language";
 
 export const CHUNK_SIZE = 20 * 1024 * 1024; // 20mb
 

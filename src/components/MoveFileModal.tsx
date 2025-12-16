@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { FolderInput, X, Loader2, Folder, ArrowUp } from "lucide-react";
 import { AppConfig, FolderItem } from "@/types";
 import { getAllFolders } from "@/services/telegramService";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface MoveFileModalProps {
   isOpen: boolean;
   onClose: () => void;
   config: AppConfig;
+  lang: Language;
   fileId: string;
   currentParentId: number | null;
   onMove: (targetParentId: number | null) => Promise<void>;
@@ -17,6 +18,7 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
   isOpen,
   onClose,
   config,
+  lang,
   fileId,
   currentParentId,
   onMove,
@@ -24,7 +26,6 @@ export const MoveFileModal: React.FC<MoveFileModalProps> = ({
   const [folders, setFolders] = useState<FolderItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
-  const lang = config?.language;
 
   useEffect(() => {
     if (isOpen) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Filter, Check, Calendar } from "lucide-react";
 import { FilterType, TimeFilter } from "@/types";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface FilterMenuProps {
   filterType: FilterType;
@@ -14,7 +14,7 @@ interface FilterMenuProps {
   setCustomEndDate: (date: string) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  lang: string;
+  lang: Language;
   // Generic handler to close other menus (like Sort) if needed,
   // or just handle outside clicks in parent.
   // For simplicity, we just toggle ourselves here.

@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import { FolderPlus, X, Loader2 } from "lucide-react";
-import { t } from "@/constants";
-import { AppConfig } from "@/types";
+import { t, Language } from "@/constants";
 
 interface CreateFolderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (name: string) => Promise<void>;
-  config: AppConfig;
+  lang: Language;
 }
 
 export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   isOpen,
   onClose,
   onCreate,
-  config,
+  lang,
 }) => {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const lang = config?.language;
 
   if (!isOpen) return null;
 

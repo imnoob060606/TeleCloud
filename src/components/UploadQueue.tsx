@@ -13,7 +13,7 @@ import {
   CircleX,
   CircleAlert,
 } from "lucide-react";
-import { formatBytes, t, CHUNK_SIZE } from "@/constants";
+import { formatBytes, t, Language, CHUNK_SIZE } from "@/constants";
 import { FileUploadStatus } from "@/types";
 interface UploadQueueProps {
   pendingFiles: File[];
@@ -27,7 +27,7 @@ interface UploadQueueProps {
   onClearUpload: (id: string) => void;
   onClearCompleted: () => void;
   onPreview: (url: string, name: string, mime: string) => void;
-  lang: string;
+  lang: Language;
   networkSpeed: string;
 }
 

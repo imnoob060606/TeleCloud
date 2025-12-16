@@ -1,14 +1,14 @@
 import React from "react";
 import { ArrowUpNarrowWide, ArrowDownNarrowWide, Check } from "lucide-react";
 import { SortConfig, SortField, SortOrder } from "@/types";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface SortMenuProps {
   sortConfig: SortConfig;
   setSortConfig: (config: SortConfig) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  lang: string;
+  lang: Language;
   onSortChange: (field: SortField, order: SortOrder) => void;
 }
 

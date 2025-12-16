@@ -12,7 +12,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { isFilePreviewable, t } from "@/constants";
+import { isFilePreviewable, t, Language } from "@/constants";
 import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   vscDarkPlus,
@@ -33,7 +33,7 @@ interface PreviewModalProps {
   url: string;
   fileName: string;
   mimeType: string;
-  lang: AppConfig["language"];
+  lang: Language;
   chunks?: any[]; // Array of chunks if the file is sliced
   config?: AppConfig; // Needed for generating download URLs for chunks
 }

@@ -13,11 +13,11 @@ import {
   X,
   Globe,
 } from "lucide-react";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 import { DownloadTask } from "@/types";
 
 interface HeaderProps {
-  lang: string;
+  lang: Language;
   theme: "light" | "dark" | "system";
   setTheme: (theme: "light" | "dark" | "system") => void;
   activeDownloads: DownloadTask[];
@@ -33,7 +33,7 @@ interface HeaderProps {
   isSortMenuOpen: boolean;
   setIsSortMenuOpen: (isOpen: boolean) => void;
   setIsDownloadListOpen: (isOpen: boolean) => void;
-  handleLanguageChange: (lang: string) => void;
+  handleLanguageChange: (lang: Language) => void;
   fetchFiles: () => void;
   setIsSettingsOpen: (isOpen: boolean) => void;
 }

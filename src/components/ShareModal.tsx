@@ -7,7 +7,7 @@ import {
   Link as LinkIcon,
   Loader2,
 } from "lucide-react";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 import { AppConfig } from "@/types";
 import { getPublicDownloadUrl } from "@/services/telegramService";
 
@@ -16,6 +16,7 @@ interface ShareModalProps {
   onClose: () => void;
   file: { id: string; name: string } | null;
   config: AppConfig;
+  lang: Language;
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
@@ -23,13 +24,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   onClose,
   file,
   config,
+  lang,
 }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-
-  const lang = config.language;
 
   useEffect(() => {
     if (isOpen) {

@@ -12,12 +12,13 @@ import {
   validateBotToken,
   saveBackendConfig,
 } from "@/services/telegramService";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   config: AppConfig;
+  lang: Language;
   onSave: (config: AppConfig) => void;
 }
 
@@ -25,6 +26,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   config,
+  lang,
   onSave,
 }) => {
   const [localConfig, setLocalConfig] = useState<AppConfig>(config);
@@ -58,8 +60,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsSaving(false);
     onClose();
   };
-
-  const lang = localConfig.language;
 
   if (!isOpen) return null;
 
