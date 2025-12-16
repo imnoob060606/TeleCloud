@@ -6,6 +6,7 @@ import {
   FolderItem,
   SortConfig,
 } from "@/types";
+import { sha256Base64 } from "@/constants";
 
 // Helper to call our Worker API
 const callWorker = async <T>(
@@ -192,17 +193,23 @@ export const getFileUrl = (
 
 // Generates a masked shareable link using the App's base URL
 // Encodes the worker URL and file info into a base64 parameter
-export const getPublicDownloadUrl = (
+export const getPublicDownloadUrl = async (
   config: AppConfig,
   fileId: string,
   fileName?: string,
-): string => {
-  const payload = {
-    w: config.workerUrl,
-    f: fileId,
-    n: fileName || "file",
-  };
-  const b64 = btoa(JSON.stringify(payload));
+  password?: string,
+): Promise<string> => {
+  const payload = [config.workerUrl, fileId, fileName || "file"];
+  if (password) {
+    payload.push(await sha256Base64(password + fileId));
+  }
+  const b64 = btoa(JSON.stringify(payload))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+  console.log("payload", payload);
+  console.log("b64", b64);
+
   return `${window.location.origin}/share?s=${b64}`;
 };
 
