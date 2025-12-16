@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { CheckCircle, Copy, X, ShieldCheck, FileText } from "lucide-react";
-import { t } from "@/constants";
-import { AppConfig } from "@/types";
+import { t, Language } from "@/constants";
 
 interface UploadedFile {
   url: string;
@@ -12,17 +11,16 @@ interface UploadSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   files: UploadedFile[];
-  config: AppConfig;
+  lang: Language;
 }
 
 export const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({
   isOpen,
   onClose,
   files,
-  config,
+  lang,
 }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const lang = config?.language;
 
   if (!isOpen) return null;
 

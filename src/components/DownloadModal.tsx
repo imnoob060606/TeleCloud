@@ -8,13 +8,13 @@ import {
   Loader2,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatBytes, t } from "@/constants";
+import { formatBytes, t, Language } from "@/constants";
 import { DownloadTask } from "@/types"; // Import DownloadTask
 
 interface DownloadModalProps {
   isOpen: boolean;
   task: DownloadTask; // Use DownloadTask object
-  lang?: string;
+  lang: Language;
   onClose: () => void;
   onCancel: (taskId: string) => void; // Add onCancel prop
 }
@@ -22,7 +22,7 @@ interface DownloadModalProps {
 export const DownloadModal: React.FC<DownloadModalProps> = ({
   isOpen,
   task, // Destructure task
-  lang = "en",
+  lang,
   onClose,
   onCancel,
 }) => {

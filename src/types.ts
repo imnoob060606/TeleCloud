@@ -70,11 +70,17 @@ export interface DownloadTask {
   endTime?: number;
 }
 
+export interface Channel {
+  id: string;
+  name: string;
+  chatId: string;
+}
+
 export interface AppConfig {
   botToken: string;
   chatId: string;
   workerUrl: string; // URL of your deployed Cloudflare Worker
-  language?: string;
+  channels?: Channel[];
 }
 
 // Standard response from our Worker API

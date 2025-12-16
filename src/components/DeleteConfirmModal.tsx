@@ -1,7 +1,6 @@
 import React from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { t } from "@/constants";
-import { AppConfig } from "@/types";
+import { t, Language } from "@/constants";
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -9,7 +8,7 @@ interface DeleteConfirmModalProps {
   onConfirm: () => void;
   fileName: string;
   isDeleting: boolean;
-  config: AppConfig;
+  lang: Language;
 }
 
 export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
@@ -18,10 +17,9 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onConfirm,
   fileName,
   isDeleting,
-  config,
+  lang,
 }) => {
   if (!isOpen) return null;
-  const lang = config?.language;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">

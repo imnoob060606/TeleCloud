@@ -12,12 +12,13 @@ import {
   validateBotToken,
   saveBackendConfig,
 } from "@/services/telegramService";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   config: AppConfig;
+  lang: Language;
   onSave: (config: AppConfig) => void;
 }
 
@@ -25,6 +26,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   config,
+  lang,
   onSave,
 }) => {
   const [localConfig, setLocalConfig] = useState<AppConfig>(config);
@@ -58,8 +60,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsSaving(false);
     onClose();
   };
-
-  const lang = localConfig.language;
 
   if (!isOpen) return null;
 
@@ -116,6 +116,115 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t(lang, "info_chat_id")}
             </p>
+          </div>
+
+          {/* Channels Management */}
+          <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              {t(lang, "channels") || "Channels"}
+            </label>
+
+            {/* List of Channels */}
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {(localConfig.channels || []).map((channel) => (
+                <div
+                  key={channel.id}
+                  className={`flex items-center justify-between p-2 rounded-lg border ${
+                    channel.chatId === localConfig.chatId
+                      ? "bg-telegram-50 border-telegram-200 dark:bg-telegram-900/20 dark:border-telegram-800"
+                      : "bg-white border-slate-200 dark:bg-slate-700 dark:border-slate-600"
+                  }`}
+                >
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                      {channel.name}
+                    </span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      {channel.chatId}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {channel.chatId !== localConfig.chatId && (
+                      <button
+                        onClick={() =>
+                          setLocalConfig({
+                            ...localConfig,
+                            chatId: channel.chatId,
+                          })
+                        }
+                        className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 rounded text-slate-700 dark:text-slate-200"
+                      >
+                        Use
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        const newChannels = (localConfig.channels || []).filter(
+                          (c) => c.id !== channel.id,
+                        );
+                        setLocalConfig({
+                          ...localConfig,
+                          channels: newChannels,
+                        });
+                      }}
+                      className="p-1 text-slate-400 hover:text-red-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add New Channel */}
+            <div className="flex gap-2 items-end">
+              <div className="flex-1 space-y-1">
+                <input
+                  type="text"
+                  placeholder="Channel Name"
+                  className="w-full px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                  id="new-channel-name"
+                />
+              </div>
+              <div className="flex-1 space-y-1">
+                <input
+                  type="text"
+                  placeholder="Chat ID"
+                  className="w-full px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                  id="new-channel-id"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const nameInput = document.getElementById(
+                    "new-channel-name",
+                  ) as HTMLInputElement;
+                  const idInput = document.getElementById(
+                    "new-channel-id",
+                  ) as HTMLInputElement;
+                  const name = nameInput.value.trim();
+                  const chatId = idInput.value.trim();
+
+                  if (name && chatId) {
+                    const newChannel = {
+                      id: crypto.randomUUID(),
+                      name,
+                      chatId,
+                    };
+                    setLocalConfig({
+                      ...localConfig,
+                      channels: [...(localConfig.channels || []), newChannel],
+                    });
+                    nameInput.value = "";
+                    idInput.value = "";
+                  }
+                }}
+                className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium"
+              >
+                Add
+              </button>
+            </div>
           </div>
 
           {/* Worker URL */}

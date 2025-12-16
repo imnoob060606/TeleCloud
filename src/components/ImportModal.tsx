@@ -8,12 +8,13 @@ import {
 } from "lucide-react";
 import { AppConfig, TelegramUpdate } from "@/types";
 import { importFile } from "@/services/telegramService";
-import { t } from "@/constants";
+import { t, Language } from "@/constants";
 
 interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   config: AppConfig;
+  lang: Language;
   onImportComplete: (newFiles: TelegramUpdate[]) => void;
 }
 
@@ -21,12 +22,12 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   isOpen,
   onClose,
   config,
+  lang,
   onImportComplete,
 }) => {
   const [input, setInput] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
-  const lang = config?.language;
 
   if (!isOpen) return null;
 

@@ -9,14 +9,14 @@ import {
   ListFilter,
 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatBytes, t } from "@/constants";
+import { formatBytes, t, Language } from "@/constants";
 import { AppConfig, DownloadTask } from "@/types";
 
 interface DownloadListModalProps {
   isOpen: boolean;
   onClose: () => void;
   activeDownloads: DownloadTask[];
-  lang: string;
+  lang: Language;
   onClearCompleted: () => void;
   onClearAll: () => void;
   onCancelDownload: (id: string) => void;

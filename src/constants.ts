@@ -5,6 +5,7 @@ export const TELEGRAM_API_BASE = "https://api.telegram.org";
 
 export const CONFIG_STORAGE_KEY = "telecloud_config";
 export const THEME_STORAGE_KEY = "telecloud_theme";
+export const LANGUAGE_STORAGE_KEY = "telecloud_language";
 
 export const CHUNK_SIZE = 20 * 1024 * 1024; // 20mb
 
@@ -354,6 +355,9 @@ export const translations = {
     enter_password_share: "请输入分享链接的密码（留空则不设密码）：",
     link_copied_password: "受保护的链接已复制到剪贴板！",
     share_button: "分享",
+    add_channel: "添加频道",
+    channel_name: "频道名称",
+    add: "添加",
     sidebar_title: "频道列表",
   },
 };
